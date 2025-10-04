@@ -1,11 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
+import Home from './pages/Home'; // Adjust the path if necessary
 import CreateField from './pages/CreateField';
 import Simulation from './pages/Simulation';
 import Settings from './pages/Settings';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+
 
 function App() {
   return (
