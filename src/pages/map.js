@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Layers, Plus, Minus, Maximize2, Navigation, Filter, MapPin, Droplet, Sun, Activity } from 'lucide-react';
+import { Layers, Plus, Minus, Maximize2, Navigation, MapPin, Droplet, Sun, Activity } from 'lucide-react';
+import ChatSupport from './chatbot';
+import Navbar from './nav';
 
 const MapView = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -37,31 +39,28 @@ const MapView = () => {
 
   return (
     <div className={`h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300 overflow-hidden`}>
-      {/* Header */}
-      <header className={`absolute top-0 left-0 right-0 z-50 ${darkMode ? 'bg-gray-800/95' : 'bg-white/95'} backdrop-blur-sm shadow-sm`}>
+      {/* Dashboard Navbar */}
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+
+      {/* Map Header avec Layer Button */}
+      <div className={`absolute top-16 left-0 right-0 z-40 ${darkMode ? 'bg-gray-800/95' : 'bg-white/95'} backdrop-blur-sm shadow-sm`}>
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <button 
-              onClick={() => window.history.back()}
-              className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors`}
-            >
-              <ArrowLeft className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-gray-800'}`} />
-            </button>
-            <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <div className="flex items-center justify-between h-12">
+            <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Field Map
             </h1>
             <button 
               onClick={() => setShowLayerMenu(!showLayerMenu)}
               className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors relative`}
             >
-              <Layers className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-gray-800'}`} />
+              <Layers className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-800'}`} />
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Map Container */}
-      <div className="relative w-full h-full pt-16">
+      <div className="relative w-full h-full pt-28">
         {/* Placeholder Map */}
         <div className={`w-full h-full ${darkMode ? 'bg-gray-800' : 'bg-gray-200'} relative`}>
           {/* Simulated Map Background */}
@@ -212,6 +211,10 @@ const MapView = () => {
         </div>
       </div>
 
+      {/* Chat Support */}
+      <ChatSupport />
+
+      {/* Custom Animation */}
       <style>{`
         @keyframes slideUp {
           from {

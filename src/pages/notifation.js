@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Droplet, Sprout, Cloud, Bug, Bell, BellOff, Info, TestTube, Calendar } from 'lucide-react';
+import { ArrowLeft, Droplet, Sprout, Cloud, Bug, TestTube, Calendar, Info } from 'lucide-react';
+import ChatSupport from './chatbot';
+import Navbar from './nav';
 
 const AlertsNotifications = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -117,8 +119,11 @@ const AlertsNotifications = () => {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}>
-      {/* Header */}
-      <header className={`sticky top-0 z-50 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+      {/* Navbar */}
+      <Navbar />
+      
+      {/* Page Header */}
+      <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm mt-16`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
@@ -150,7 +155,7 @@ const AlertsNotifications = () => {
             )}
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -336,6 +341,9 @@ const AlertsNotifications = () => {
           </div>
         </section>
       </main>
+
+      {/* Chat Support */}
+      <ChatSupport />
     </div>
   );
 };

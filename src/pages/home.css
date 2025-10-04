@@ -1,0 +1,204 @@
+/* Cacher le branding et l’iframe par défaut */
+#google_translate_element .goog-te-banner-frame.skiptranslate { 
+  display: none !important; 
+}
+body { 
+  top: 0 !important; 
+}
+
+/* Style premium du sélecteur de langue */
+.translate-dropdown {
+  position: relative;
+  display: inline-block;
+  min-width: 140px;
+}
+
+.translate-dropdown select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 10px 45px 10px 15px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 10;
+}
+
+.translate-dropdown select:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.translate-dropdown select:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.4), 
+              0 12px 30px rgba(16, 185, 129, 0.5);
+  border-color: #10b981;
+  transform: scale(1.02);
+}
+
+/* Flèche personnalisée premium */
+.translate-dropdown::before {
+  content: "🌐";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: white;
+  font-size: 1rem;
+  z-index: 11;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.translate-dropdown::after {
+  content: "⌄";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  z-index: 11;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.translate-dropdown:hover::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Animation d'ouverture */
+@keyframes languagePop {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.translate-dropdown select {
+  animation: languagePop 0.6s ease-out;
+}
+
+/* Effet de brillance au survol */
+.translate-dropdown::before {
+  transition: transform 0.3s ease;
+}
+
+.translate-dropdown:hover::before {
+  transform: translateY(-50%) rotate(15deg) scale(1.1);
+}
+
+/* Style pour les options du dropdown */
+.translate-dropdown select option {
+  background: white;
+  color: #1f2937;
+  padding: 12px 15px;
+  font-weight: 500;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.translate-dropdown select option:hover {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #065f46;
+  transform: translateX(5px);
+}
+
+.translate-dropdown select option:checked {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-weight: 600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .translate-dropdown {
+    min-width: 120px;
+  }
+  
+  .translate-dropdown select {
+    padding: 8px 35px 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .translate-dropdown::before {
+    left: 10px;
+    font-size: 0.9rem;
+  }
+  
+  .translate-dropdown::after {
+    right: 12px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Effet de pulsation subtile */
+@keyframes gentlePulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+  }
+}
+
+.translate-dropdown select:focus {
+  animation: gentlePulse 2s infinite;
+}
+
+/* Transition douce pour tous les états */
+.translate-dropdown * {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Amélioration de la lisibilité */
+.translate-dropdown select {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Support pour le mode sombre */
+@media (prefers-color-scheme: dark) {
+  .translate-dropdown select option {
+    background: #374151;
+    color: #f9fafb;
+    border-bottom-color: #4b5563;
+  }
+  
+  .translate-dropdown select option:hover {
+    background: #065f46;
+    color: white;
+  }
+}
+
+/* Effet de profondeur */
+.translate-dropdown {
+  perspective: 1000px;
+}
+
+.translate-dropdown select {
+  transform-style: preserve-3d;
+}
+
+.translate-dropdown select:hover {
+  transform: translateY(-2px) rotateX(5deg);
+}

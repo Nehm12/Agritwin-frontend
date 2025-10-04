@@ -36,3 +36,22 @@
     transform: rotate(360deg);
   }
 }
+/* Cache le logo Google */
+.goog-logo-link, .goog-te-gadget span {
+  display: none !important;
+}
+
+/* Style du select */
+.goog-te-combo {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.goog-te-combo:hover {
+  border-color: #10b981;
+}
+

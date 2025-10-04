@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Sprout, Sun, Moon, User, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Register = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -14,21 +15,34 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    if (password !== confirmPassword) {
-      alert('Les mots de passe ne correspondent pas!');
-      return;
-    }
-    
-    console.log('Registration submitted:', { 
-      nom, 
-      prenom, 
-      email, 
-      telephone, 
-      password 
+ 
+
+const handleSubmit = async () => {
+  if (password !== confirmPassword) {
+    alert('Les mots de passe ne correspondent pas!');
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://127.0.0.1:5000/users/', {
+      lastname: nom,
+      firstname: prenom,
+      email: email,
+      phone: telephone,
+      password: password,
+      language: 'fr' // facultatif
     });
+
+    console.log(response.data);
     alert('Inscription réussie! Bienvenue sur AgriTwin.');
-  };
+    navigate('/login'); // Redirige vers la page login après inscription
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    alert('Erreur lors de l’inscription : ' + (error.response?.data?.message || 'Vérifiez les informations'));
+  }
+};
+
+  
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-emerald-50 to-green-100'} transition-colors duration-300 flex items-center justify-center p-4`}>

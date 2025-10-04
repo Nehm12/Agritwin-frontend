@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Camera, Lock, CreditCard, Link2, Bell, Cloud, Sprout, AlertCircle, Globe, Sun, Moon, HelpCircle, Shield, FileText, LogOut, ChevronRight } from 'lucide-react';
+import ChatSupport from './chatbot';
+import Navbar from './nav';
 
 const Settings = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -47,8 +49,11 @@ const Settings = () => {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}>
-      {/* Header */}
-      <header className={`sticky top-0 z-50 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+      {/* Dashboard Navbar */}
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+      
+      {/* Page Header */}
+      <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm mt-16`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <button 
@@ -63,7 +68,7 @@ const Settings = () => {
             <div className="w-10"></div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -287,6 +292,9 @@ const Settings = () => {
           </p>
         </div>
       </main>
+
+      {/* Chat Support */}
+      <ChatSupport />
     </div>
   );
 };

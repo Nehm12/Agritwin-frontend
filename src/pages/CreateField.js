@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, MapPin, Sprout, Droplet, Package, Image, Upload, CheckCircle } from 'lucide-react';
+import axios from 'axios';
+import ChatSupport from './chatbot';
+import Navbar from './nav'; // Import de la navbar
 
-const FieldCreation = () => {
-  const [darkMode, setDarkMode] = useState(false);
+const FieldCreation = ({ darkMode, setDarkMode }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     fieldName: '',
@@ -15,9 +17,22 @@ const FieldCreation = () => {
     irrigationType: '',
     fertilizationType: ''
   });
+  const [cropTypes, setCropTypes] = useState([]);
+  
+  useEffect(() => {
+    loadCrops();
+  }, []);
+  
+  const loadCrops = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/crops');
+      setCropTypes(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
 
-  const cropTypes = ['Corn', 'Wheat', 'Rice', 'Soybean', 'Cotton', 'Vegetables', 'Other'];
-  const soilTypes = ['Sandy', 'Clay', 'Loam', 'Silt', 'Peat', 'Chalk'];
   const irrigationTypes = ['Drip', 'Sprinkler', 'Surface', 'Manual', 'Rain-fed'];
   const fertilizationTypes = ['Organic', 'Chemical', 'Mixed', 'None'];
 
@@ -33,9 +48,26 @@ const FieldCreation = () => {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleSubmit = () => {
-    console.log('Field created:', formData);
-    alert('Field created successfully!');
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/fields/", {
+        user_id: 1, // à remplacer par l'ID utilisateur connecté
+        name: formData.fieldName,
+        lat: formData.latitude,
+        lon: formData.longitude,
+        area: formData.area,
+        country: "Benin", // tu peux ajouter un champ dans ton form si tu veux
+        city: formData.location,
+        crop_type_id: formData.cropType.id // si crop_type est un ID dans ta DB
+      });
+
+      alert("Field created successfully!");
+      console.log("Created field:", response.data);
+
+    } catch (error) {
+      console.error("Error creating field:", error);
+      alert("Failed to create field!");
+    }
   };
 
   const isStepValid = () => {
@@ -45,7 +77,7 @@ const FieldCreation = () => {
       case 2:
         return formData.location || (formData.latitude && formData.longitude);
       case 3:
-        return formData.cropType && formData.soilType;
+        return formData.cropType?.id;
       case 4:
         return formData.irrigationType && formData.fertilizationType;
       default:
@@ -55,26 +87,11 @@ const FieldCreation = () => {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}>
-      {/* Header */}
-      <header className={`sticky top-0 z-50 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <button 
-              onClick={() => window.history.back()}
-              className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors`}
-            >
-              <ArrowLeft className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-gray-800'}`} />
-            </button>
-            <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Create New Field
-            </h1>
-            <div className="w-10"></div>
-          </div>
-        </div>
-      </header>
+      {/* Utilisation de la Navbar */}
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
 
       {/* Progress Bar */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24">
         <div className="flex items-center justify-between mb-2">
           {[1, 2, 3, 4].map((num) => (
             <div key={num} className="flex items-center flex-1">
@@ -256,40 +273,17 @@ const FieldCreation = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {cropTypes.map((crop) => (
                     <button
-                      key={crop}
+                      key={crop.id}
                       onClick={() => handleInputChange('cropType', crop)}
                       className={`py-3 px-4 rounded-lg font-medium transition-all ${
-                        formData.cropType === crop
+                        formData.cropType?.id === crop.id
                           ? 'bg-emerald-500 text-white shadow-md'
                           : darkMode
                             ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
-                      {crop}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                  Soil Type *
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {soilTypes.map((soil) => (
-                    <button
-                      key={soil}
-                      onClick={() => handleInputChange('soilType', soil)}
-                      className={`py-3 px-4 rounded-lg font-medium transition-all ${
-                        formData.soilType === soil
-                          ? 'bg-emerald-500 text-white shadow-md'
-                          : darkMode
-                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      {soil}
+                      {crop.name}
                     </button>
                   ))}
                 </div>
@@ -357,21 +351,6 @@ const FieldCreation = () => {
                   ))}
                 </div>
               </div>
-
-              <div>
-                <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                  Field Photos (Optional)
-                </label>
-                <div className={`border-2 border-dashed ${darkMode ? 'border-gray-600' : 'border-gray-300'} rounded-lg p-8 text-center hover:border-emerald-500 transition-colors cursor-pointer`}>
-                  <Upload className={`w-12 h-12 mx-auto mb-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Click to upload or drag and drop
-                  </p>
-                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'} mt-1`}>
-                    PNG, JPG up to 10MB
-                  </p>
-                </div>
-              </div>
             </div>
           )}
         </div>
@@ -422,8 +401,22 @@ const FieldCreation = () => {
           )}
         </div>
       </main>
+
+      <ChatSupport />
     </div>
   );
 };
 
-export default FieldCreation;
+// Composant wrapper pour gérer l'état darkMode
+const FieldCreationWithDarkMode = () => {
+  const [darkMode, setDarkMode] = useState(false);
+
+  return (
+    <FieldCreation 
+      darkMode={darkMode} 
+      setDarkMode={setDarkMode} 
+    />
+  );
+};
+
+export default FieldCreationWithDarkMode;

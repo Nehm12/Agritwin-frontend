@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, MoreVertical, X, Plus, Download, Share2, Save, Droplet, TrendingUp, BarChart3, Satellite, Cloud } from 'lucide-react';
-
+import ChatSupport from '../components/Chatbot';
 const FieldComparison = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [selectedFields, setSelectedFields] = useState([
@@ -343,7 +343,9 @@ const FieldComparison = () => {
             </div>
           )}
         </div>
+      
       </main>
+      <ChatSupport />
     </div>
   );
 };

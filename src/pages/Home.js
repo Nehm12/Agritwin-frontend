@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { Sprout, MapPin, Activity, TrendingUp, Users, Shield, Zap, CheckCircle, ArrowRight, Menu, X } from 'lucide-react';
+import React from 'react';
+import { Sprout, MapPin, Activity, TrendingUp, Users, Shield, Zap, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import './home.css';
+import Navbar from './nav';
+import ChatSupport from './chatbot';
+
 
 const Home = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  
   const features = [
     {
       icon: <MapPin className="w-8 h-8" />,
@@ -69,58 +73,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-600 rounded-lg flex items-center justify-center">
-                <Sprout className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">AgriTwin</span>
-            </div>
-
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Features</a>
-              <a href="#how-it-works" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">How It Works</a>
-              <a href="#testimonials" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Testimonials</a>
-              <a href="#pricing" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Pricing</a>
-              <button onClick={() => navigate('/login')} className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">
-                Login
-              </button>
-              <button onClick={() => navigate('/login')} className="bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-600 transition-colors">
-                Get Started
-              </button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t">
-              <div className="flex flex-col gap-4">
-                <a href="#features" className="text-gray-700 hover:text-emerald-600 font-medium">Features</a>
-                <a href="#how-it-works" className="text-gray-700 hover:text-emerald-600 font-medium">How It Works</a>
-                <a href="#testimonials" className="text-gray-700 hover:text-emerald-600 font-medium">Testimonials</a>
-                <a href="#pricing" className="text-gray-700 hover:text-emerald-600 font-medium">Pricing</a>
-                <button onClick={() => alert('Login')} className="text-left text-gray-700 hover:text-emerald-600 font-medium">
-                  Login
-                </button>
-                <button onClick={() => navigate('/login')} className="bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-600 text-center">
-                  Get Started
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 bg-gradient-to-br from-emerald-50 to-green-100">
@@ -134,17 +87,29 @@ const Home = () => {
                 Transform your farming with AI-powered insights, real-time monitoring, and predictive analytics. Make data-driven decisions that increase yield and reduce costs.
               </p>
               <div className="flex flex-wrap gap-4">
-                <button onClick={() => alert('Start free trial')} className="bg-emerald-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-emerald-600 transition-colors shadow-lg">
+                <button 
+                  onClick={() => navigate('/login')} 
+                  className="bg-emerald-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-emerald-600 transition-colors shadow-lg"
+                >
                   Start Free Trial
                 </button>
-                <button onClick={() => alert('Watch demo')} className="bg-white text-emerald-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-50 transition-colors border-2 border-emerald-500">
+                <button 
+                  onClick={() => alert('Watch demo')} 
+                  className="bg-white text-emerald-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-50 transition-colors border-2 border-emerald-500"
+                >
                   Watch Demo
                 </button>
               </div>
             </div>
+            
+            {/* Image Section */}
             <div className="relative">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center shadow-2xl">
-                <Sprout className="w-48 h-48 text-white opacity-20" />
+              <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
+                <img 
+                  src="/images/img2.jpg" 
+                  alt="Agriculture Technology" 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
               </div>
             </div>
           </div>
@@ -245,7 +210,10 @@ const Home = () => {
           <p className="text-xl text-emerald-50 mb-8">
             Join thousands of farmers already using AgriTwin to increase yields and reduce costs
           </p>
-          <button onClick={() => navigate('/login')} className="bg-white text-emerald-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-50 transition-colors shadow-lg inline-flex items-center gap-2">
+          <button 
+            onClick={() => navigate('/login')} 
+            className="bg-white text-emerald-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-50 transition-colors shadow-lg inline-flex items-center gap-2"
+          >
             Get Started Free
             <ArrowRight className="w-5 h-5" />
           </button>
@@ -293,6 +261,9 @@ const Home = () => {
           </div>
         </div>
       </footer>
+
+      {/* Chat Support */}
+      <ChatSupport />
     </div>
   );
 };

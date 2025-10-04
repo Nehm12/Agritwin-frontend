@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Download, Calendar, TrendingUp, Droplet, DollarSign, Sprout, BarChart3, FileText, Filter } from 'lucide-react';
-
+import ChatSupport from './chatbot';
 const ReportsAnalytics = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('6months');
@@ -241,6 +241,8 @@ const ReportsAnalytics = () => {
           </div>
         </div>
       </main>
+
+      <ChatSupport />
     </div>
   );
 };

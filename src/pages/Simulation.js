@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, MoreVertical, Download, Share2, Play, TrendingUp, TrendingDown, Droplet, Sprout, DollarSign, Zap, CheckCircle, AlertTriangle, ChevronDown, BarChart3 } from 'lucide-react';
-
+import ChatSupport from './chatbot';
 const Simulation = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState('standard');
@@ -305,6 +305,8 @@ const Simulation = () => {
           )}
         </div>
       </main>
+
+      <ChatSupport />
 
       {/* Floating Compare Button */}
       <button 
