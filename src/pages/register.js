@@ -1,17 +1,33 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Sprout, Sun, Moon } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Sprout, Sun, Moon, User, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Register = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [nom, setNom] = useState('');
+  const [prenom, setPrenom] = useState('');
   const [email, setEmail] = useState('');
+  const [telephone, setTelephone] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    console.log('Login submitted:', { email, password });
-    alert('Login successful! Welcome to AgriTwin.');
+    if (password !== confirmPassword) {
+      alert('Les mots de passe ne correspondent pas!');
+      return;
+    }
+    
+    console.log('Registration submitted:', { 
+      nom, 
+      prenom, 
+      email, 
+      telephone, 
+      password 
+    });
+    alert('Inscription réussie! Bienvenue sur AgriTwin.');
   };
 
   return (
@@ -37,19 +53,66 @@ const Login = () => {
               <Sprout className="w-10 h-10 text-white" />
             </div>
             <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
-              Welcome to AgriTwin
+              Rejoignez AgriTwin
             </h1>
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Your digital farm companion
+              Votre compagnon agricole digital
             </p>
           </div>
 
-          {/* Login Form */}
+          {/* Registration Form */}
           <div className="space-y-5">
+            {/* Nom et Prénom */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                  Nom
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <User className={`w-5 h-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  </div>
+                  <input
+                    type="text"
+                    value={nom}
+                    onChange={(e) => setNom(e.target.value)}
+                    placeholder="Votre nom"
+                    className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+                    } focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none`}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                  Prénom
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <User className={`w-5 h-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  </div>
+                  <input
+                    type="text"
+                    value={prenom}
+                    onChange={(e) => setPrenom(e.target.value)}
+                    placeholder="Votre prénom"
+                    className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+                    } focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none`}
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Email Field */}
             <div>
               <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                Email Address
+                Email <span className="text-gray-500 text-xs">(optionnel)</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -69,10 +132,33 @@ const Login = () => {
               </div>
             </div>
 
+            {/* Telephone Field */}
+            <div>
+              <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                Numéro de téléphone
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Phone className={`w-5 h-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                </div>
+                <input
+                  type="tel"
+                  value={telephone}
+                  onChange={(e) => setTelephone(e.target.value)}
+                  placeholder="+33 1 23 45 67 89"
+                  className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+                  } focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none`}
+                />
+              </div>
+            </div>
+
             {/* Password Field */}
             <div>
               <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                Password
+                Mot de passe
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -82,7 +168,7 @@ const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder="Créez votre mot de passe"
                   className={`w-full pl-12 pr-12 py-3 rounded-lg border ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
@@ -103,22 +189,46 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Forgot Password Link */}
-            <div className="flex items-center justify-end">
-              <button 
-                onClick={() => alert('Password reset link sent!')}
-                className="text-sm font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
-              >
-                Forgot password?
-              </button>
+            {/* Confirm Password Field */}
+            <div>
+              <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                Confirmer le mot de passe
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className={`w-5 h-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                </div>
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirmez votre mot de passe"
+                  className={`w-full pl-12 pr-12 py-3 rounded-lg border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-emerald-500'
+                  } focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className={`w-5 h-5 ${darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'} transition-colors`} />
+                  ) : (
+                    <Eye className={`w-5 h-5 ${darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'} transition-colors`} />
+                  )}
+                </button>
+              </div>
             </div>
 
-            {/* Login Button */}
+            {/* Register Button */}
             <button
               onClick={handleSubmit}
               className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold py-3.5 px-4 rounded-lg hover:from-emerald-600 hover:to-green-700 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              Sign In
+              S'inscrire
             </button>
           </div>
 
@@ -129,15 +239,15 @@ const Login = () => {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className={`px-4 ${darkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-500'}`}>
-                Or continue with
+                Ou continuer avec
               </span>
             </div>
           </div>
 
-          {/* Social Login Buttons */}
+          {/* Social Register Buttons */}
           <div className="grid grid-cols-2 gap-3">
             <button 
-              onClick={() => alert('Google login coming soon!')}
+              onClick={() => alert('Inscription Google à venir!')}
               className={`flex items-center justify-center gap-3 py-3 px-4 rounded-lg border ${
                 darkMode 
                   ? 'border-gray-700 bg-gray-700 hover:bg-gray-600' 
@@ -168,7 +278,7 @@ const Login = () => {
             </button>
 
             <button 
-              onClick={() => alert('Apple login coming soon!')}
+              onClick={() => alert('Inscription Apple à venir!')}
               className={`flex items-center justify-center gap-3 py-3 px-4 rounded-lg border ${
                 darkMode 
                   ? 'border-gray-700 bg-gray-700 hover:bg-gray-600' 
@@ -184,15 +294,15 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Sign Up Link */}
+          {/* Login Link */}
           <div className="mt-6 text-center">
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Don't have an account?{' '}
+              Vous avez déjà un compte?{' '}
               <button 
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/login')}
                 className="font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
               >
-                Sign up for free
+                Se connecter
               </button>
             </p>
           </div>
@@ -201,13 +311,13 @@ const Login = () => {
         {/* Footer */}
         <div className="mt-6 text-center">
           <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
-            By signing in, you agree to our{' '}
-            <button onClick={() => alert('Terms of Service')} className="underline hover:text-emerald-600 transition-colors">
-              Terms of Service
+            En vous inscrivant, vous acceptez nos{' '}
+            <button onClick={() => alert('Conditions d\'utilisation')} className="underline hover:text-emerald-600 transition-colors">
+              Conditions d'utilisation
             </button>{' '}
-            and{' '}
-            <button onClick={() => alert('Privacy Policy')} className="underline hover:text-emerald-600 transition-colors">
-              Privacy Policy
+            et notre{' '}
+            <button onClick={() => alert('Politique de confidentialité')} className="underline hover:text-emerald-600 transition-colors">
+              Politique de confidentialité
             </button>
           </p>
         </div>
@@ -216,4 +326,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
