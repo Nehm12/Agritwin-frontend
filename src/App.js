@@ -1,8 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/login';
-import Register from './pages/register';
+import Home from './pages/Home'; // Adjust the path if necessary
 import CreateField from './pages/CreateField';
 import Simulation from './pages/Simulation';
 import SimulationSet from './pages/SimulationSet';
@@ -18,6 +16,7 @@ import FieldComparison from './pages/comparaison';
 import FieldDetail from './pages/details';
 import ProtectedRoute from './pages/ProtectedRoute';
 import Footer from './components/Footer';
+
 
 function App() {
   return (
