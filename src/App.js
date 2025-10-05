@@ -9,8 +9,11 @@ import Settings from './pages/Settings';
 import FieldCreation from './pages/CreateField';
 import ReportsAnalytics from './pages/reports';
 import MyFields from './pages/my_fields';
+import MyField2 from './pages/my_fields2'
 import MapView from './pages/map';
 import FarmSimulation from './pages/simul';
+import Login from './pages/login';
+import Register from './pages/register';
 import AlertsNotifications from './pages/notifation';
 import FieldComparison from './pages/comparaison';
 import FieldDetail from './pages/details';
@@ -65,6 +68,15 @@ function App() {
           element={
             <ProtectedRoute>
               <MyFields />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/My_Fields2" 
+          element={
+            <ProtectedRoute>
+              <MyField2 />
             </ProtectedRoute>
           } 
         />
