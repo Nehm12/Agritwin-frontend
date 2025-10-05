@@ -16,7 +16,9 @@ import FieldComparison from './pages/comparaison';
 import FieldDetail from './pages/details';
 import ProtectedRoute from './pages/ProtectedRoute';
 import Footer from './components/Footer';
-
+import Login from './pages/login';
+import Register from './pages/register';
+ 
 
 function App() {
   return (
