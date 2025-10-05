@@ -29,19 +29,19 @@ const Navbar = ({ darkMode, setDarkMode }) => {
               onClick={() => navigate('/dashboard')}
               className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}
             >
-              Accueil
+              Home
             </button>
             <button 
               onClick={() => navigate('/create')} 
               className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}
             >
-              Créer un champ
+              Create a field
             </button>
             <button 
               onClick={() => navigate('/map')} 
               className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}
             >
-              Cartes
+              Card
             </button>
             <button 
               onClick={() => navigate('/simulation')} 
@@ -60,7 +60,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
               onClick={() => navigate('/settings')} 
               className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}
             >
-              Paramètres
+              Settings
             </button>
           </div>
 
@@ -108,7 +108,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                 }}
                 className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} transition-colors`}
               >
-                Accueil
+                Home
               </button>
               <button 
                 onClick={() => {
@@ -117,7 +117,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                 }}
                 className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} transition-colors`}
               >
-                Créer un champ
+                Create a field
               </button>
               <button 
                 onClick={() => {
@@ -126,7 +126,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                 }}
                 className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} transition-colors`}
               >
-                Cartes
+                Card
               </button>
               <button 
                 onClick={() => {
@@ -154,7 +154,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                 }}
                 className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} transition-colors`}
               >
-                Paramètres
+                Settings
               </button>
             </div>
           </div>
