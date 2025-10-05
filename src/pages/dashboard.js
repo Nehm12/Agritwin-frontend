@@ -1,55 +1,148 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, Bell, Sprout, Droplet, Sun, TrendingUp, AlertTriangle, Bug, MapPin, X, Activity, Users, Shield, Zap, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import ChatSupport from './chatbot';
+
 const Dashboard = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [metrics, setMetrics] = useState([]);
+  const [alerts, setAlerts] = useState([]);
+  const [fieldsOverview, setFieldsOverview] = useState({ total_fields: 0, active_fields: 0 });
+  const [weatherForecast, setWeatherForecast] = useState(null);
+  const [yieldForecast, setYieldForecast] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const metrics = [
-    { label: 'Farm Health', value: '88%', icon: <TrendingUp className="w-5 h-5" />, trend: '+5%', color: 'emerald' },
-    { label: 'Weather', value: '72°F', subtitle: 'Clear', icon: <Sun className="w-5 h-5" />, color: 'amber' },
-    { label: 'Soil Moisture', value: '65%', icon: <Droplet className="w-5 h-5" />, trend: '-3%', color: 'blue' },
-    { label: 'Crop Growth', value: 'Flowering', icon: <Sprout className="w-5 h-5" />, color: 'green' }
-  ];
+  // Icônes pour les types d'alertes
+  const alertIcons = {
+    bug: <Bug className="w-5 h-5" />,
+    droplet: <Droplet className="w-5 h-5" />,
+    'alert-triangle': <AlertTriangle className="w-5 h-5" />
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch fields first to get field IDs
+      const fieldsResponse = await fetch('/api/fields');
+      const fieldsData = await fieldsResponse.json();
+      
+      if (fieldsData.length === 0) {
+        // No fields, use default data
+        setDefaultData();
+        return;
+      }
+
+      const firstFieldId = fieldsData[0].id;
+
+      // Fetch complete forecast data for the first field
+      const forecastResponse = await fetch(`/api/forecast/${firstFieldId}`);
+      const forecastData = await forecastResponse.json();
+
+      // Fetch yield forecast
+      const yieldResponse = await fetch(`/api/forecast/yield/${firstFieldId}`);
+      const yieldData = await yieldResponse.json();
+
+      // Fetch alerts
+      const alertsResponse = await fetch('/api/dashboard/alerts');
+      const alertsData = await alertsResponse.json();
+
+      // Transform data for display using forecast API
+      const transformedMetrics = [
+        { 
+          label: 'Farm Health', 
+          value: `${calculateFarmHealth(forecastData)}%`, 
+          icon: <TrendingUp className="w-5 h-5" />, 
+          trend: '+5%', 
+          color: 'emerald' 
+        },
+        { 
+          label: 'Weather', 
+          value: `${forecastData.current_conditions?.temperature_c || 25}°C`, 
+          subtitle: getWeatherCondition(forecastData.current_conditions?.humidity_percent), 
+          icon: <Sun className="w-5 h-5" />, 
+          color: 'amber' 
+        },
+        { 
+          label: 'Soil Moisture', 
+          value: `${calculateSoilMoisture(forecastData.current_conditions)}%`, 
+          icon: <Droplet className="w-5 h-5" />, 
+          trend: '-3%', 
+          color: 'blue' 
+        },
+        { 
+          label: 'Crop Growth', 
+          value: getGrowthStage(forecastData.current_conditions?.ndvi), 
+          icon: <Sprout className="w-5 h-5" />, 
+          color: 'green' 
+        }
+      ];
+
+      setMetrics(transformedMetrics);
+      setAlerts(alertsData.alerts || []);
+      setFieldsOverview({
+        total_fields: fieldsData.length,
+        active_fields: fieldsData.length
+      });
+      setWeatherForecast(forecastData);
+      setYieldForecast(yieldData);
+      
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setDefaultData();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateFarmHealth = (forecastData) => {
+    if (!forecastData?.current_conditions?.ndvi) return 75;
+    const ndvi = forecastData.current_conditions.ndvi;
+    return Math.min(100, Math.max(0, Math.round(ndvi * 100)));
+  };
+
+  const getWeatherCondition = (humidity) => {
+    if (!humidity) return 'Clear';
+    if (humidity > 80) return 'Rainy';
+    if (humidity > 60) return 'Cloudy';
+    return 'Clear';
+  };
+
+  const calculateSoilMoisture = (conditions) => {
+    if (!conditions?.humidity_percent) return 65;
+    return Math.round(conditions.humidity_percent * 0.7);
+  };
+
+  const getGrowthStage = (ndvi) => {
+    if (!ndvi) return 'Flowering';
+    if (ndvi > 0.7) return 'Flowering';
+    if (ndvi > 0.5) return 'Vegetative';
+    if (ndvi > 0.3) return 'Germination';
+    return 'Planted';
+  };
+
+  const setDefaultData = () => {
+    setMetrics([
+      { label: 'Farm Health', value: '88%', icon: <TrendingUp className="w-5 h-5" />, trend: '+5%', color: 'emerald' },
+      { label: 'Weather', value: '72°F', subtitle: 'Clear', icon: <Sun className="w-5 h-5" />, color: 'amber' },
+      { label: 'Soil Moisture', value: '65%', icon: <Droplet className="w-5 h-5" />, trend: '-3%', color: 'blue' },
+      { label: 'Crop Growth', value: 'Flowering', icon: <Sprout className="w-5 h-5" />, color: 'green' }
+    ]);
+    setAlerts([]);
+    setFieldsOverview({ total_fields: 0, active_fields: 0 });
+  };
 
   const quickActions = [
-    { icon: <MapPin className="w-6 h-6" />, label: 'My_Fields', color: 'emerald' },
+    { icon: <MapPin className="w-6 h-6" />, label: 'My_fields', color: 'emerald' },
     { icon: <TrendingUp className="w-6 h-6" />, label: 'simulation', color: 'blue' },
     { icon: <Bell className="w-6 h-6" />, label: 'notification', color: 'amber' },
-    
-  ];
-
-  const alerts = [
-    {
-      icon: <Bug className="w-5 h-5" />,
-      iconColor: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-      title: 'Pest Alert',
-      description: 'Aphids detected in Field A. Action recommended.',
-      time: '2h ago',
-      priority: 'medium'
-    },
-    {
-      icon: <Droplet className="w-5 h-5" />,
-      iconColor: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      title: 'Irrigation Needed',
-      description: 'Low moisture in Field C. Please irrigate.',
-      time: '1d ago',
-      priority: 'low'
-    },
-    {
-      icon: <AlertTriangle className="w-5 h-5" />,
-      iconColor: 'text-red-600',
-      bgColor: 'bg-red-50',
-      title: 'Critical Frost Warning',
-      description: 'Temperature dropping below freezing tonight. Protect sensitive crops.',
-      time: '8h ago',
-      priority: 'high'
-    }
   ];
 
   const getColorClass = (color, type = 'bg') => {
@@ -62,6 +155,44 @@ const Dashboard = () => {
     };
     return colors[color] || colors.emerald;
   };
+
+  // Afficher les prévisions météo dans un tooltip ou section supplémentaire
+  const renderWeatherForecast = () => {
+    if (!weatherForecast?.weather_forecast) return null;
+
+    const { temperature, dates } = weatherForecast.weather_forecast;
+    
+    return (
+      <div className={`mt-4 p-4 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-blue-50'} border ${darkMode ? 'border-gray-700' : 'border-blue-200'}`}>
+        <h4 className={`text-sm font-semibold mb-2 ${darkMode ? 'text-white' : 'text-blue-900'}`}>
+          7-Day Forecast
+        </h4>
+        <div className="grid grid-cols-7 gap-1 text-xs">
+          {dates.slice(0, 7).map((date, index) => (
+            <div key={index} className="text-center">
+              <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-blue-800'}`}>
+                {new Date(date).toLocaleDateString('fr-FR', { weekday: 'short' })}
+              </div>
+              <div className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-blue-900'}`}>
+                {Math.round(temperature[index])}°
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} flex items-center justify-center`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
+          <p className={`mt-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Chargement des données...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}>
@@ -83,13 +214,13 @@ const Dashboard = () => {
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-6">
               <button className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Accueil
+                Home
               </button>
               <button onClick={() => navigate('/create')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Créer un champs
+                Create a field
               </button>
               <button onClick={() => navigate('/map')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Cartes
+                Card
               </button>
               <button onClick={() => navigate('/simulation')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
                 Simulations
@@ -97,9 +228,8 @@ const Dashboard = () => {
               <button onClick={() => navigate('/notification')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
                 Notifications
               </button>
-
               <button onClick={() => navigate('/settings')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Paramètres
+                Settings
               </button>
             </div>
 
@@ -112,9 +242,10 @@ const Dashboard = () => {
               </button>
               <button onClick={() => navigate('/notification')} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors relative`}>
                 <Bell className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                {alerts.length > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                )}
               </button>
-              
 
               {/* Mobile Menu Button */}
               <button 
@@ -131,13 +262,13 @@ const Dashboard = () => {
             <div className={`md:hidden py-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <div className="flex flex-col gap-4">
                 <button onClick={() => navigate('/dashboard')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Accueil
+                  Home
                 </button>
                 <button onClick={() => navigate('/create')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Créer un champs
+                  Create a field
                 </button>
                 <button onClick={() => navigate('/map')}  className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Cartes
+                  Card
                 </button>
                 <button onClick={() => navigate('/simulation')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Simulations
@@ -145,9 +276,8 @@ const Dashboard = () => {
                 <button onClick={() => navigate('/notification')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Notifications
                 </button>
-                
                 <button onClick={() => navigate('/settings')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Paramètres
+                  Settings
                 </button>
               </div>
             </div>
@@ -165,6 +295,12 @@ const Dashboard = () => {
           <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Here's what's happening with your farm today
           </p>
+          {yieldForecast && (
+            <div className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm ${darkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800'}`}>
+              <TrendingUp className="w-4 h-4 mr-1" />
+              Yield Forecast: {yieldForecast.yield_estimate || 'N/A'}
+            </div>
+          )}
         </div>
 
         {/* Metrics Grid */}
@@ -199,6 +335,7 @@ const Dashboard = () => {
                   {metric.subtitle}
                 </p>
               )}
+              {index === 1 && weatherForecast && renderWeatherForecast()}
             </div>
           ))}
         </div>
@@ -236,15 +373,16 @@ const Dashboard = () => {
               Recent Alerts
             </h3>
             <div className="space-y-3">
-              {alerts.map((alert, index) => (
+              {alerts.length > 0 ? alerts.map((alert, index) => (
                 <div
-                  key={index}
+                  key={alert.id}
                   className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border ${darkMode ? 'border-gray-700' : 'border-gray-100'} cursor-pointer group`}
+                  onClick={() => navigate(`/fields/${alert.field_id}`)}
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`${alert.bgColor} ${darkMode ? 'bg-opacity-20' : ''} p-3 rounded-lg shrink-0`}>
-                      <div className={alert.iconColor}>
-                        {alert.icon}
+                    <div className={`${alert.bg_color} ${darkMode ? 'bg-opacity-20' : ''} p-3 rounded-lg shrink-0`}>
+                      <div className={alert.icon_color}>
+                        {alertIcons[alert.icon]}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -262,7 +400,12 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 text-center border ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                  <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                  <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Aucune alerte récente</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -272,7 +415,10 @@ const Dashboard = () => {
               Field Overview
             </h3>
             <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-              <div className="aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-green-200 flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
+              <div 
+                className="aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-green-200 flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => navigate('/map')}
+              >
                 <div className="text-center">
                   <MapPin className="w-12 h-12 text-emerald-600 mx-auto mb-2" />
                   <p className="text-emerald-700 font-medium">Interactive Map View</p>
@@ -282,9 +428,14 @@ const Dashboard = () => {
               <div className="mt-4 flex items-center justify-between">
                 <div>
                   <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Fields</p>
-                  <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>3 Active</p>
+                  <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {fieldsOverview.active_fields} Active
+                  </p>
                 </div>
-                <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors text-sm font-medium">
+                <button 
+                  onClick={() => navigate('/fields')}
+                  className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors text-sm font-medium"
+                >
                   View All
                 </button>
               </div>

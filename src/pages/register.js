@@ -5,44 +5,40 @@ import axios from 'axios';
 
 const Register = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const [nom, setNom] = useState('');
-  const [prenom, setPrenom] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
-  const [telephone, setTelephone] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
- 
+  const handleSubmit = async () => {
+    if (password !== confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
 
-const handleSubmit = async () => {
-  if (password !== confirmPassword) {
-    alert('Les mots de passe ne correspondent pas!');
-    return;
-  }
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/users/', {
+        lastname: lastName,
+        firstname: firstName,
+        email: email,
+        phone: phone,
+        password: password,
+        language: 'en' // optional
+      });
 
-  try {
-    const response = await axios.post('http://127.0.0.1:5000/users/', {
-      lastname: nom,
-      firstname: prenom,
-      email: email,
-      phone: telephone,
-      password: password,
-      language: 'fr' // facultatif
-    });
-
-    console.log(response.data);
-    alert('Inscription réussie! Bienvenue sur AgriTwin.');
-    navigate('/login'); // Redirige vers la page login après inscription
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-    alert('Erreur lors de l’inscription : ' + (error.response?.data?.message || 'Vérifiez les informations'));
-  }
-};
-
-  
+      console.log(response.data);
+      alert('Registration successful! Welcome to AgriTwin.');
+      navigate('/login'); // Redirect to login page after registration
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      alert('Registration error: ' + (error.response?.data?.message || 'Please check your information'));
+    }
+  };
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-emerald-50 to-green-100'} transition-colors duration-300 flex items-center justify-center p-4`}>
@@ -67,20 +63,20 @@ const handleSubmit = async () => {
               <Sprout className="w-10 h-10 text-white" />
             </div>
             <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
-              Rejoignez AgriTwin
+              Join AgriTwin
             </h1>
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Votre compagnon agricole digital
+              Your digital farming companion
             </p>
           </div>
 
           {/* Registration Form */}
           <div className="space-y-5">
-            {/* Nom et Prénom */}
+            {/* Last Name and First Name */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                  Nom
+                  Last Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -88,9 +84,9 @@ const handleSubmit = async () => {
                   </div>
                   <input
                     type="text"
-                    value={nom}
-                    onChange={(e) => setNom(e.target.value)}
-                    placeholder="Votre nom"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Your last name"
                     className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
@@ -102,7 +98,7 @@ const handleSubmit = async () => {
 
               <div>
                 <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                  Prénom
+                  First Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -110,9 +106,9 @@ const handleSubmit = async () => {
                   </div>
                   <input
                     type="text"
-                    value={prenom}
-                    onChange={(e) => setPrenom(e.target.value)}
-                    placeholder="Votre prénom"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Your first name"
                     className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
                       darkMode 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
@@ -126,7 +122,7 @@ const handleSubmit = async () => {
             {/* Email Field */}
             <div>
               <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                Email <span className="text-gray-500 text-xs">(optionnel)</span>
+                Email <span className="text-gray-500 text-xs">(optional)</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -146,10 +142,10 @@ const handleSubmit = async () => {
               </div>
             </div>
 
-            {/* Telephone Field */}
+            {/* Phone Field */}
             <div>
               <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                Numéro de téléphone
+                Phone Number
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -157,9 +153,9 @@ const handleSubmit = async () => {
                 </div>
                 <input
                   type="tel"
-                  value={telephone}
-                  onChange={(e) => setTelephone(e.target.value)}
-                  placeholder="+33 1 23 45 67 89"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+229 0190876543"
                   className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
@@ -172,7 +168,7 @@ const handleSubmit = async () => {
             {/* Password Field */}
             <div>
               <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                Mot de passe
+                Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -182,7 +178,7 @@ const handleSubmit = async () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Créez votre mot de passe"
+                  placeholder="Create your password"
                   className={`w-full pl-12 pr-12 py-3 rounded-lg border ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
@@ -206,7 +202,7 @@ const handleSubmit = async () => {
             {/* Confirm Password Field */}
             <div>
               <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-                Confirmer le mot de passe
+                Confirm Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -216,7 +212,7 @@ const handleSubmit = async () => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirmez votre mot de passe"
+                  placeholder="Confirm your password"
                   className={`w-full pl-12 pr-12 py-3 rounded-lg border ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 
@@ -242,7 +238,7 @@ const handleSubmit = async () => {
               onClick={handleSubmit}
               className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold py-3.5 px-4 rounded-lg hover:from-emerald-600 hover:to-green-700 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              S'inscrire
+              Sign Up
             </button>
           </div>
 
@@ -253,7 +249,7 @@ const handleSubmit = async () => {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className={`px-4 ${darkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-500'}`}>
-                Ou continuer avec
+                Or continue with
               </span>
             </div>
           </div>
@@ -261,7 +257,7 @@ const handleSubmit = async () => {
           {/* Social Register Buttons */}
           <div className="grid grid-cols-2 gap-3">
             <button 
-              onClick={() => alert('Inscription Google à venir!')}
+              onClick={() => alert('Google registration coming soon!')}
               className={`flex items-center justify-center gap-3 py-3 px-4 rounded-lg border ${
                 darkMode 
                   ? 'border-gray-700 bg-gray-700 hover:bg-gray-600' 
@@ -292,7 +288,7 @@ const handleSubmit = async () => {
             </button>
 
             <button 
-              onClick={() => alert('Inscription Apple à venir!')}
+              onClick={() => alert('Apple registration coming soon!')}
               className={`flex items-center justify-center gap-3 py-3 px-4 rounded-lg border ${
                 darkMode 
                   ? 'border-gray-700 bg-gray-700 hover:bg-gray-600' 
@@ -311,12 +307,12 @@ const handleSubmit = async () => {
           {/* Login Link */}
           <div className="mt-6 text-center">
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Vous avez déjà un compte?{' '}
+              Already have an account?{' '}
               <button 
                 onClick={() => navigate('/login')}
                 className="font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
               >
-                Se connecter
+                Sign In
               </button>
             </p>
           </div>
@@ -325,13 +321,13 @@ const handleSubmit = async () => {
         {/* Footer */}
         <div className="mt-6 text-center">
           <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
-            En vous inscrivant, vous acceptez nos{' '}
-            <button onClick={() => alert('Conditions d\'utilisation')} className="underline hover:text-emerald-600 transition-colors">
-              Conditions d'utilisation
+            By signing up, you agree to our{' '}
+            <button onClick={() => alert('Terms of Service')} className="underline hover:text-emerald-600 transition-colors">
+              Terms of Service
             </button>{' '}
-            et notre{' '}
-            <button onClick={() => alert('Politique de confidentialité')} className="underline hover:text-emerald-600 transition-colors">
-              Politique de confidentialité
+            and{' '}
+            <button onClick={() => alert('Privacy Policy')} className="underline hover:text-emerald-600 transition-colors">
+              Privacy Policy
             </button>
           </p>
         </div>
