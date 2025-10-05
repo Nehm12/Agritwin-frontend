@@ -1,148 +1,174 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Bell, Sprout, Droplet, Sun, TrendingUp, AlertTriangle, Bug, MapPin, X, Activity, Users, Shield, Zap, CheckCircle } from 'lucide-react';
+import { Sprout, Droplet, Sun, TrendingUp, AlertTriangle, Bug, MapPin, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import ChatSupport from './chatbot';
+import Navbar from './nav';
+import axios from 'axios';
 
 const Dashboard = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('darkMode') === 'true';
+  });
   const [metrics, setMetrics] = useState([]);
-  const [alerts, setAlerts] = useState([]);
-  const [fieldsOverview, setFieldsOverview] = useState({ total_fields: 0, active_fields: 0 });
-  const [weatherForecast, setWeatherForecast] = useState(null);
-  const [yieldForecast, setYieldForecast] = useState(null);
+  const [fieldsData, setFieldsData] = useState([]);
+  const [selectedFieldId, setSelectedFieldId] = useState(null); // Nouveau state
+  const [forecastData, setForecastData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Icônes pour les types d'alertes
-  const alertIcons = {
-    bug: <Bug className="w-5 h-5" />,
-    droplet: <Droplet className="w-5 h-5" />,
-    'alert-triangle': <AlertTriangle className="w-5 h-5" />
-  };
-
   useEffect(() => {
-    fetchDashboardData();
+    fetchFieldsData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  // Charger les données quand le champ sélectionné change
+  useEffect(() => {
+    if (selectedFieldId) {
+      fetchFieldForecast(selectedFieldId);
+    }
+  }, [selectedFieldId]);
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
+
+  const fetchFieldsData = async () => {
     try {
       setLoading(true);
-      
-      // Fetch fields first to get field IDs
-      const fieldsResponse = await fetch('/api/fields');
-      const fieldsData = await fieldsResponse.json();
-      
-      if (fieldsData.length === 0) {
-        // No fields, use default data
-        setDefaultData();
+      setError(null);
+
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        navigate('/login');
         return;
       }
 
-      const firstFieldId = fieldsData[0].id;
+      // Récupérer les champs de l'utilisateur
+      const fieldsResponse = await axios.get(`http://localhost:5000/fields/user/${userId}`);
+      const fields = fieldsResponse.data;
+      setFieldsData(fields);
 
-      // Fetch complete forecast data for the first field
-      const forecastResponse = await fetch(`/api/forecast/${firstFieldId}`);
-      const forecastData = await forecastResponse.json();
+      if (fields.length === 0) {
+        setDefaultData();
+        setLoading(false);
+        return;
+      }
 
-      // Fetch yield forecast
-      const yieldResponse = await fetch(`/api/forecast/yield/${firstFieldId}`);
-      const yieldData = await yieldResponse.json();
+      // Sélectionner le premier champ par défaut
+      setSelectedFieldId(fields[0].id);
 
-      // Fetch alerts
-      const alertsResponse = await fetch('/api/dashboard/alerts');
-      const alertsData = await alertsResponse.json();
+    } catch (err) {
+      console.error('Error fetching fields:', err);
+      setError('Impossible de charger les champs. Utilisation des données par défaut.');
+      setDefaultData();
+      setLoading(false);
+    }
+  };
 
-      // Transform data for display using forecast API
-      const transformedMetrics = [
-        { 
-          label: 'Farm Health', 
-          value: `${calculateFarmHealth(forecastData)}%`, 
-          icon: <TrendingUp className="w-5 h-5" />, 
-          trend: '+5%', 
-          color: 'emerald' 
-        },
-        { 
-          label: 'Weather', 
-          value: `${forecastData.current_conditions?.temperature_c || 25}°C`, 
-          subtitle: getWeatherCondition(forecastData.current_conditions?.humidity_percent), 
-          icon: <Sun className="w-5 h-5" />, 
-          color: 'amber' 
-        },
-        { 
-          label: 'Soil Moisture', 
-          value: `${calculateSoilMoisture(forecastData.current_conditions)}%`, 
-          icon: <Droplet className="w-5 h-5" />, 
-          trend: '-3%', 
-          color: 'blue' 
-        },
-        { 
-          label: 'Crop Growth', 
-          value: getGrowthStage(forecastData.current_conditions?.ndvi), 
-          icon: <Sprout className="w-5 h-5" />, 
-          color: 'green' 
-        }
-      ];
-
-      setMetrics(transformedMetrics);
-      setAlerts(alertsData.alerts || []);
-      setFieldsOverview({
-        total_fields: fieldsData.length,
-        active_fields: fieldsData.length
-      });
-      setWeatherForecast(forecastData);
-      setYieldForecast(yieldData);
+  const fetchFieldForecast = async (fieldId) => {
+    try {
+      setLoading(true);
       
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      // Récupérer les prévisions complètes pour le champ sélectionné
+      const forecastResponse = await axios.get(`http://localhost:5000/forecast/${fieldId}`);
+      const forecast = forecastResponse.data;
+      setForecastData(forecast);
+
+      // Construire les métriques
+      const currentConditions = forecast.current_conditions;
+      
+      if (currentConditions) {
+        const transformedMetrics = [
+          { 
+            label: 'Farm Health', 
+            value: `${calculateFarmHealth(currentConditions.ndvi)}%`, 
+            icon: <TrendingUp className="w-5 h-5" />, 
+            trend: '+5%', 
+            color: 'emerald' 
+          },
+          { 
+            label: 'Temperature', 
+            value: `${Math.round(currentConditions.temperature_c)}°C`, 
+            subtitle: getWeatherCondition(currentConditions.humidity_percent), 
+            icon: <Sun className="w-5 h-5" />, 
+            color: 'amber',
+            forecast: forecast.weather_forecast
+          },
+          { 
+            label: 'Soil Moisture', 
+            value: `${Math.round(currentConditions.humidity_percent)}%`, 
+            icon: <Droplet className="w-5 h-5" />, 
+            trend: calculateTrend(forecast.weather_forecast?.humidity), 
+            color: 'blue' 
+          },
+          { 
+            label: 'NDVI Index', 
+            value: currentConditions.ndvi.toFixed(2), 
+            subtitle: getGrowthStage(currentConditions.ndvi),
+            icon: <Sprout className="w-5 h-5" />, 
+            color: 'green' 
+          }
+        ];
+        setMetrics(transformedMetrics);
+      } else {
+        setDefaultData();
+      }
+
+    } catch (err) {
+      console.error('Error fetching forecast:', err);
+      setError('Impossible de charger les prévisions pour ce champ.');
       setDefaultData();
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateFarmHealth = (forecastData) => {
-    if (!forecastData?.current_conditions?.ndvi) return 75;
-    const ndvi = forecastData.current_conditions.ndvi;
-    return Math.min(100, Math.max(0, Math.round(ndvi * 100)));
+  const handleFieldChange = (fieldId) => {
+    setSelectedFieldId(parseInt(fieldId));
+  };
+
+  const calculateFarmHealth = (ndvi) => {
+    if (!ndvi) return 75;
+    return Math.min(100, Math.max(0, Math.round((ndvi + 1) * 50)));
   };
 
   const getWeatherCondition = (humidity) => {
     if (!humidity) return 'Clear';
-    if (humidity > 80) return 'Rainy';
-    if (humidity > 60) return 'Cloudy';
-    return 'Clear';
+    if (humidity > 80) return 'Humid';
+    if (humidity > 60) return 'Moderate';
+    return 'Dry';
   };
 
-  const calculateSoilMoisture = (conditions) => {
-    if (!conditions?.humidity_percent) return 65;
-    return Math.round(conditions.humidity_percent * 0.7);
+  const calculateTrend = (humidityForecast) => {
+    if (!humidityForecast || humidityForecast.length < 2) return null;
+    const current = humidityForecast[0];
+    const next = humidityForecast[1];
+    const diff = next - current;
+    if (Math.abs(diff) < 2) return null;
+    return diff > 0 ? `+${diff.toFixed(0)}%` : `${diff.toFixed(0)}%`;
   };
 
   const getGrowthStage = (ndvi) => {
-    if (!ndvi) return 'Flowering';
-    if (ndvi > 0.7) return 'Flowering';
-    if (ndvi > 0.5) return 'Vegetative';
-    if (ndvi > 0.3) return 'Germination';
-    return 'Planted';
+    if (!ndvi) return 'N/A';
+    if (ndvi > 0.6) return 'Mature';
+    if (ndvi > 0.4) return 'Growing';
+    if (ndvi > 0.2) return 'Early Growth';
+    return 'Germination';
   };
 
   const setDefaultData = () => {
     setMetrics([
       { label: 'Farm Health', value: '88%', icon: <TrendingUp className="w-5 h-5" />, trend: '+5%', color: 'emerald' },
-      { label: 'Weather', value: '72°F', subtitle: 'Clear', icon: <Sun className="w-5 h-5" />, color: 'amber' },
+      { label: 'Temperature', value: '25°C', subtitle: 'Clear', icon: <Sun className="w-5 h-5" />, color: 'amber' },
       { label: 'Soil Moisture', value: '65%', icon: <Droplet className="w-5 h-5" />, trend: '-3%', color: 'blue' },
-      { label: 'Crop Growth', value: 'Flowering', icon: <Sprout className="w-5 h-5" />, color: 'green' }
+      { label: 'NDVI Index', value: '0.65', subtitle: 'Growing', icon: <Sprout className="w-5 h-5" />, color: 'green' }
     ]);
-    setAlerts([]);
-    setFieldsOverview({ total_fields: 0, active_fields: 0 });
   };
 
   const quickActions = [
-    { icon: <MapPin className="w-6 h-6" />, label: 'My_fields', color: 'emerald' },
-    { icon: <TrendingUp className="w-6 h-6" />, label: 'simulation', color: 'blue' },
-    { icon: <Bell className="w-6 h-6" />, label: 'notification', color: 'amber' },
+    { icon: <MapPin className="w-6 h-6" />, label: 'My Fields', route: '/My_Fields', color: 'emerald' },
+    { icon: <TrendingUp className="w-6 h-6" />, label: 'Simulation', route: '/simulation', color: 'blue' },
+    { icon: <Droplet className="w-6 h-6" />, label: 'Notification', route: '/notification', color: 'amber' },
   ];
 
   const getColorClass = (color, type = 'bg') => {
@@ -156,25 +182,26 @@ const Dashboard = () => {
     return colors[color] || colors.emerald;
   };
 
-  // Afficher les prévisions météo dans un tooltip ou section supplémentaire
-  const renderWeatherForecast = () => {
-    if (!weatherForecast?.weather_forecast) return null;
+  const renderWeatherForecast = (forecast) => {
+    if (!forecast?.dates || forecast.dates.length === 0) return null;
 
-    const { temperature, dates } = weatherForecast.weather_forecast;
-    
     return (
-      <div className={`mt-4 p-4 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-blue-50'} border ${darkMode ? 'border-gray-700' : 'border-blue-200'}`}>
-        <h4 className={`text-sm font-semibold mb-2 ${darkMode ? 'text-white' : 'text-blue-900'}`}>
+      <div className={`mt-4 p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-amber-50'} border ${darkMode ? 'border-gray-600' : 'border-amber-200'}`}>
+        <h4 className={`text-xs font-semibold mb-2 ${darkMode ? 'text-amber-300' : 'text-amber-900'}`}>
           7-Day Forecast
         </h4>
         <div className="grid grid-cols-7 gap-1 text-xs">
-          {dates.slice(0, 7).map((date, index) => (
+          {forecast.dates.slice(0, 7).map((date, index) => (
             <div key={index} className="text-center">
-              <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-blue-800'}`}>
-                {new Date(date).toLocaleDateString('fr-FR', { weekday: 'short' })}
+              <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-amber-800'}`}>
+                {new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}
               </div>
-              <div className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-blue-900'}`}>
-                {Math.round(temperature[index])}°
+              <div className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-amber-900'}`}>
+                {Math.round(forecast.temperature[index])}°
+              </div>
+              <Droplet className={`w-3 h-3 mx-auto ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {Math.round(forecast.precipitation[index])}mm
               </div>
             </div>
           ))}
@@ -183,12 +210,14 @@ const Dashboard = () => {
     );
   };
 
-  if (loading) {
+  const selectedField = fieldsData.find(f => f.id === selectedFieldId);
+
+  if (loading && !selectedFieldId) {
     return (
       <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} flex items-center justify-center`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
-          <p className={`mt-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Chargement des données...</p>
+          <p className={`mt-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Loading data...</p>
         </div>
       </div>
     );
@@ -196,112 +225,99 @@ const Dashboard = () => {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}>
-      {/* Header avec nouvelle navbar */}
-      <header className={`fixed top-0 left-0 right-0 ${darkMode ? 'bg-gray-800/95' : 'bg-white/95'} backdrop-blur-sm shadow-sm z-50`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-green-600 rounded-lg flex items-center justify-center">
-                  <Sprout className="w-5 h-5 text-white" />
-                </div>
-                <Link to="/" className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  AgriTwin
-                </Link>
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+        {/* Welcome Section avec sélecteur de champ */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div>
+              <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
+                Welcome back, Farmer
+              </h2>
+              <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Here's what's happening with your farm today
+              </p>
+            </div>
+
+            {/* Sélecteur de champ */}
+            {fieldsData.length > 0 && (
+              <div className="relative">
+                <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                  Select Field
+                </label>
+                <select
+                  value={selectedFieldId || ''}
+                  onChange={(e) => handleFieldChange(e.target.value)}
+                  className={`w-full sm:w-64 px-4 py-3 pr-10 rounded-lg border ${
+                    darkMode 
+                      ? 'bg-gray-800 border-gray-700 text-white' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  } focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none appearance-none cursor-pointer`}
+                >
+                  {fieldsData.map((field) => (
+                    <option key={field.id} value={field.id}>
+                      {field.name} ({field.area} ha)
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className={`absolute right-3 top-11 w-5 h-5 pointer-events-none ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
               </div>
-            </div>
-            
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-6">
-              <button className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Home
-              </button>
-              <button onClick={() => navigate('/create')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Create a field
-              </button>
-              <button onClick={() => navigate('/map')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Card
-              </button>
-              <button onClick={() => navigate('/simulation')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Simulations
-              </button>
-              <button onClick={() => navigate('/notification')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Notifications
-              </button>
-              <button onClick={() => navigate('/settings')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Settings
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setDarkMode(!darkMode)}
-                className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors`}
-              >
-                {darkMode ? <Sun className="w-5 h-5 text-amber-400" /> : <Sun className="w-5 h-5 text-gray-600" />}
-              </button>
-              <button onClick={() => navigate('/notification')} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors relative`}>
-                <Bell className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
-                {alerts.length > 0 && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                )}
-              </button>
-
-              {/* Mobile Menu Button */}
-              <button 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg hover:bg-gray-100"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
+            )}
           </div>
 
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className={`md:hidden py-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <div className="flex flex-col gap-4">
-                <button onClick={() => navigate('/dashboard')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Home
-                </button>
-                <button onClick={() => navigate('/create')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Create a field
-                </button>
-                <button onClick={() => navigate('/map')}  className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Card
-                </button>
-                <button onClick={() => navigate('/simulation')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Simulations
-                </button>
-                <button onClick={() => navigate('/notification')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Notifications
-                </button>
-                <button onClick={() => navigate('/settings')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Settings
-                </button>
+          {error && (
+            <div className="mt-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-yellow-800 dark:text-yellow-200 text-sm">{error}</p>
+            </div>
+          )}
+
+          {/* Informations sur le champ sélectionné */}
+          {selectedField && (
+            <div className={`mt-4 p-4 rounded-lg ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border`}>
+              <div className="flex items-center gap-4">
+                <MapPin className={`w-8 h-8 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                <div>
+                  <h3 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {selectedField.name}
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {selectedField.city}, {selectedField.country} • {selectedField.area} hectares
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'} mt-1`}>
+                    Coordinates: {selectedField.lat}, {selectedField.lon}
+                  </p>
+                </div>
               </div>
             </div>
           )}
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
-            Welcome back, Farmer
-          </h2>
-          <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Here's what's happening with your farm today
-          </p>
-          {yieldForecast && (
-            <div className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm ${darkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800'}`}>
-              <TrendingUp className="w-4 h-4 mr-1" />
-              Yield Forecast: {yieldForecast.yield_estimate || 'N/A'}
+          {forecastData?.current_yield_estimate && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${darkMode ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-800' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'}`}>
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Yield Estimate: {forecastData.current_yield_estimate.toFixed(1)}/100
+              </div>
+              {forecastData?.future_yield_estimate && (
+                <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${darkMode ? 'bg-blue-900/30 text-blue-300 border border-blue-800' : 'bg-blue-50 text-blue-800 border border-blue-200'}`}>
+                  Future Yield: {forecastData.future_yield_estimate.toFixed(1)}/100
+                </div>
+              )}
             </div>
           )}
         </div>
+
+        {/* Indicateur de chargement pour changement de champ */}
+        {loading && selectedFieldId && (
+          <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-white'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'} mb-8`}>
+            <div className="flex items-center justify-center gap-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-500"></div>
+              <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                Loading data for {selectedField?.name}...
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -318,7 +334,7 @@ const Dashboard = () => {
                 </div>
                 {metric.trend && (
                   <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                    metric.trend.startsWith('+') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    metric.trend.startsWith('+') ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
                   }`}>
                     {metric.trend}
                   </span>
@@ -335,7 +351,7 @@ const Dashboard = () => {
                   {metric.subtitle}
                 </p>
               )}
-              {index === 1 && weatherForecast && renderWeatherForecast()}
+              {metric.forecast && index === 1 && renderWeatherForecast(metric.forecast)}
             </div>
           ))}
         </div>
@@ -345,11 +361,11 @@ const Dashboard = () => {
           <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
             Quick Actions
           </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {quickActions.map((action, index) => (
               <button
                 key={index}
-                onClick={() => navigate(`/${action.label}`)}
+                onClick={() => navigate(action.route)}
                 className={`${darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border ${darkMode ? 'border-gray-700' : 'border-gray-100'} group`}
               >
                 <div className={`${getColorClass(action.color, 'bg')} p-4 rounded-lg inline-flex mb-3 group-hover:scale-110 transition-transform duration-300`}>
@@ -365,79 +381,90 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Alerts and Field Overview Grid */}
+        {/* Fields Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Alerts */}
           <div>
             <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
-              Recent Alerts
+              All Your Fields
             </h3>
-            <div className="space-y-3">
-              {alerts.length > 0 ? alerts.map((alert, index) => (
-                <div
-                  key={alert.id}
-                  className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border ${darkMode ? 'border-gray-700' : 'border-gray-100'} cursor-pointer group`}
-                  onClick={() => navigate(`/fields/${alert.field_id}`)}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className={`${alert.bg_color} ${darkMode ? 'bg-opacity-20' : ''} p-3 rounded-lg shrink-0`}>
-                      <div className={alert.icon_color}>
-                        {alertIcons[alert.icon]}
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-1">
-                        <h4 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {alert.title}
-                        </h4>
-                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'} ml-2 shrink-0`}>
-                          {alert.time}
-                        </span>
-                      </div>
-                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {alert.description}
-                      </p>
-                    </div>
-                  </div>
+            <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className={`p-4 rounded-lg ${darkMode ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>Total Fields</p>
+                  <p className={`text-3xl font-bold ${darkMode ? 'text-emerald-300' : 'text-emerald-600'}`}>
+                    {fieldsData.length}
+                  </p>
                 </div>
-              )) : (
-                <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 text-center border ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                  <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                  <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Aucune alerte récente</p>
+                <div className={`p-4 rounded-lg ${darkMode ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>Total Area</p>
+                  <p className={`text-3xl font-bold ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                    {fieldsData.reduce((sum, f) => sum + (f.area || 0), 0).toFixed(1)} ha
+                  </p>
+                </div>
+              </div>
+              
+              {fieldsData.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                    Your Fields:
+                  </h4>
+                  {fieldsData.map((field) => (
+                    <div 
+                      key={field.id}
+                      onClick={() => setSelectedFieldId(field.id)}
+                      className={`p-3 rounded-lg cursor-pointer transition-all ${
+                        field.id === selectedFieldId 
+                          ? darkMode ? 'bg-emerald-900/30 border-2 border-emerald-700' : 'bg-emerald-50 border-2 border-emerald-300'
+                          : darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {field.name}
+                          </p>
+                          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {field.area} ha • {field.city}
+                          </p>
+                        </div>
+                        <MapPin className={`w-5 h-5 ${
+                          field.id === selectedFieldId 
+                            ? 'text-emerald-500' 
+                            : darkMode ? 'text-emerald-400' : 'text-emerald-600'
+                        }`} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
+              
+              <button 
+                onClick={() => navigate('/My_Fields')}
+                className="w-full mt-4 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors text-sm font-medium"
+              >
+                View All Fields
+              </button>
             </div>
           </div>
 
-          {/* Field Overview */}
           <div>
             <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
-              Field Overview
+              Field Map
             </h3>
             <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
               <div 
-                className="aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-green-200 flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
+                className="aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-green-200 dark:from-emerald-900/20 dark:to-green-900/20 flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => navigate('/map')}
               >
                 <div className="text-center">
-                  <MapPin className="w-12 h-12 text-emerald-600 mx-auto mb-2" />
-                  <p className="text-emerald-700 font-medium">Interactive Map View</p>
-                  <p className="text-emerald-600 text-sm">Click to explore your fields</p>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <div>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Fields</p>
-                  <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {fieldsOverview.active_fields} Active
+                  <MapPin className={`w-12 h-12 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'} mx-auto mb-2`} />
+                  <p className={`${darkMode ? 'text-emerald-300' : 'text-emerald-700'} font-medium`}>
+                    Interactive Map View
+                  </p>
+                  <p className={`${darkMode ? 'text-emerald-400' : 'text-emerald-600'} text-sm`}>
+                    Click to explore {selectedField?.name || 'your fields'}
                   </p>
                 </div>
-                <button 
-                  onClick={() => navigate('/fields')}
-                  className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors text-sm font-medium"
-                >
-                  View All
-                </button>
               </div>
             </div>
           </div>

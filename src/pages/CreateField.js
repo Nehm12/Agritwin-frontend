@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Sprout, Droplet, Package, Image, Upload, CheckCircle } from 'lucide-react';
+import { ArrowLeft, MapPin, Sprout, Droplet, Package, Image, Upload, CheckCircle, Loader } from 'lucide-react';
 import axios from 'axios';
+import Navbar from './nav';
 import ChatSupport from './chatbot';
-import Navbar from './nav'; // Import de la navbar
 
-const FieldCreation = ({ darkMode, setDarkMode }) => {
+const FieldCreation = () => {
+  const [darkMode, setDarkMode] = useState(false);
   const [step, setStep] = useState(1);
+  const [loadingLocation, setLoadingLocation] = useState(false);
   const [formData, setFormData] = useState({
     fieldName: '',
     location: '',
@@ -25,9 +27,8 @@ const FieldCreation = ({ darkMode, setDarkMode }) => {
   
   const loadCrops = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/crops');
+      const response = await axios.get('http://localhost:5000/crops/get');
       setCropTypes(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error('Erreur:', error);
     }
@@ -40,6 +41,80 @@ const FieldCreation = ({ darkMode, setDarkMode }) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Fonction pour obtenir la localisation actuelle
+  const getCurrentLocation = () => {
+  setLoadingLocation(true);
+
+  if (!navigator.geolocation) {
+    alert('La géolocalisation n\'est pas supportée par votre navigateur');
+    setLoadingLocation(false);
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = position.coords.latitude.toFixed(6);
+      const lon = position.coords.longitude.toFixed(6);
+      
+      // Mettre à jour les coordonnées
+      handleInputChange('latitude', lat);
+      handleInputChange('longitude', lon);
+
+      // Obtenir l'adresse via reverse geocoding (OpenStreetMap Nominatim API)
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`,
+          {
+            headers: {
+              'User-Agent': 'AgriTwin-App'
+            }
+          }
+        );
+
+        const data = await response.json(); // ✅ Important : récupérer les données
+
+        if (data && data.display_name) { // ✅ Utiliser 'data' au lieu de 'response.data'
+          handleInputChange('location', data.display_name);
+        } else {
+          // Fallback si pas d'adresse trouvée
+          handleInputChange('location', `Lat: ${lat}, Lon: ${lon}`);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération de l\'adresse:', error);
+        // Fallback en cas d'erreur
+        handleInputChange('location', `Lat: ${lat}, Lon: ${lon}`);
+      }
+
+      setLoadingLocation(false);
+    },
+    (error) => {
+      setLoadingLocation(false);
+      let errorMessage = 'Impossible d\'obtenir votre position';
+      
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage = 'Vous avez refusé l\'accès à la géolocalisation. Veuillez autoriser l\'accès dans les paramètres de votre navigateur.';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          errorMessage = 'Les informations de localisation ne sont pas disponibles.';
+          break;
+        case error.TIMEOUT:
+          errorMessage = 'La demande de géolocalisation a expiré.';
+          break;
+        default:
+          errorMessage = 'Une erreur inconnue s\'est produite.';
+      }
+      
+      alert(errorMessage);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+};
+
   const handleNext = () => {
     if (step < 4) setStep(step + 1);
   };
@@ -50,23 +125,32 @@ const FieldCreation = ({ darkMode, setDarkMode }) => {
 
   const handleSubmit = async () => {
     try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('Vous devez être connecté pour créer un champ');
+        return;
+      }
+
       const response = await axios.post("http://localhost:5000/fields/", {
-        user_id: 1, // à remplacer par l'ID utilisateur connecté
+        user_id: parseInt(userId),
         name: formData.fieldName,
-        lat: formData.latitude,
-        lon: formData.longitude,
-        area: formData.area,
-        country: "Benin", // tu peux ajouter un champ dans ton form si tu veux
+        lat: parseFloat(formData.latitude),
+        lon: parseFloat(formData.longitude),
+        area: parseFloat(formData.area),
+        country: "Benin",
         city: formData.location,
-        crop_type_id: formData.cropType.id // si crop_type est un ID dans ta DB
+        crop_type_id: formData.cropType.id
       });
 
-      alert("Field created successfully!");
-      console.log("Created field:", response.data);
+      alert("Champ créé avec succès!");
+      console.log("Champ créé:", response.data);
+      
+      // Redirection ou réinitialisation du formulaire
+      window.location.href = '/My_Fields';
 
     } catch (error) {
-      console.error("Error creating field:", error);
-      alert("Failed to create field!");
+      console.error("Erreur lors de la création du champ:", error);
+      alert("Échec de la création du champ!");
     }
   };
 
@@ -87,7 +171,6 @@ const FieldCreation = ({ darkMode, setDarkMode }) => {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}>
-      {/* Utilisation de la Navbar */}
       <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
 
       {/* Progress Bar */}
@@ -163,6 +246,8 @@ const FieldCreation = ({ darkMode, setDarkMode }) => {
                   value={formData.area}
                   onChange={(e) => handleInputChange('area', e.target.value)}
                   placeholder="e.g., 50"
+                  step="0.01"
+                  min="0"
                   className={`w-full px-4 py-3 rounded-lg border ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
@@ -244,10 +329,35 @@ const FieldCreation = ({ darkMode, setDarkMode }) => {
                 </div>
               </div>
 
-              <button className="w-full py-3 px-4 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors flex items-center justify-center gap-2">
-                <MapPin className="w-5 h-5" />
-                Use Current Location
+              <button 
+                onClick={getCurrentLocation}
+                disabled={loadingLocation}
+                className={`w-full py-3 px-4 ${
+                  loadingLocation 
+                    ? 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed' 
+                    : 'bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50'
+                } text-blue-600 dark:text-blue-400 rounded-lg font-medium transition-colors flex items-center justify-center gap-2`}
+              >
+                {loadingLocation ? (
+                  <>
+                    <Loader className="w-5 h-5 animate-spin" />
+                    Récupération de la position...
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="w-5 h-5" />
+                    Use Current Location
+                  </>
+                )}
               </button>
+
+              {formData.latitude && formData.longitude && (
+                <div className={`p-3 rounded-lg ${darkMode ? 'bg-emerald-900/20' : 'bg-emerald-50'} border ${darkMode ? 'border-emerald-800' : 'border-emerald-200'}`}>
+                  <p className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
+                    ✓ Coordonnées détectées: {formData.latitude}, {formData.longitude}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -407,16 +517,4 @@ const FieldCreation = ({ darkMode, setDarkMode }) => {
   );
 };
 
-// Composant wrapper pour gérer l'état darkMode
-const FieldCreationWithDarkMode = () => {
-  const [darkMode, setDarkMode] = useState(false);
-
-  return (
-    <FieldCreation 
-      darkMode={darkMode} 
-      setDarkMode={setDarkMode} 
-    />
-  );
-};
-
-export default FieldCreationWithDarkMode;
+export default FieldCreation;
