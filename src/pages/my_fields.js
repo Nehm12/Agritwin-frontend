@@ -1,63 +1,110 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Search, Filter, Grid, List, MapPin, Sprout, TrendingUp, TrendingDown, MoreVertical } from 'lucide-react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ChatSupport from './chatbot';
-const MyFields = () => {
-  const [darkMode, setDarkMode] = useState(false);
+import Navbar from './nav';
+import axios from 'axios';
+
+const MyFields = ({ darkMode, setDarkMode }) => {
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCrop, setFilterCrop] = useState('all');
+  const [fields, setFields] = useState([]);
+  const [cropTypes, setCropTypes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const fields = [
-    {
-      id: 1,
-      name: 'Field Alpha',
-      crop: 'Corn',
-      area: '50 ha',
-      health: 88,
-      moisture: 65,
-      status: 'Healthy',
-      lastUpdate: '2h ago',
-      image: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400&h=300&fit=crop',
-      trend: 'up'
-    },
-    {
-      id: 2,
-      name: 'Field Beta',
-      crop: 'Wheat',
-      area: '75 ha',
-      health: 92,
-      moisture: 72,
-      status: 'Excellent',
-      lastUpdate: '5h ago',
-      image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop',
-      trend: 'up'
-    },
-    {
-      id: 3,
-      name: 'Field Gamma',
-      crop: 'Soybean',
-      area: '60 ha',
-      health: 75,
-      moisture: 45,
-      status: 'Needs Attention',
-      lastUpdate: '1d ago',
-      image: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&h=300&fit=crop',
-      trend: 'down'
-    },
-    {
-      id: 4,
-      name: 'Field Delta',
-      crop: 'Rice',
-      area: '45 ha',
-      health: 85,
-      moisture: 80,
-      status: 'Healthy',
-      lastUpdate: '3h ago',
-      image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop',
-      trend: 'up'
+
+  // Charger les champs et les types de culture au montage du composant
+  useEffect(() => {
+    loadFields();
+    loadCropTypes();
+  }, []);
+
+  const loadFields = async () => {
+    try {
+      setIsLoading(true);
+      const userId = localStorage.getItem('userId');
+      
+      if (!userId) {
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.get(`http://localhost:5000/fields/user/${userId}`);
+      const fieldsData = response.data;
+      setFields(response.data);
+      console.log('Fetched fields:', fieldsData);
+      
+      // Transformer les données pour inclure les informations manquantes
+      const enhancedFields = await Promise.all(
+        fields.map(async (field) => {
+          // Récupérer les informations du type de culture
+          let cropInfo = {};
+          if (field.crop_type_id) {
+            try {
+              const cropResponse = await axios.get(`http://localhost:5000/crops`);
+              setCropTypes(cropResponse.data);
+              
+              cropInfo = cropTypes.find(crop => crop.id === field.crop_type_id) || {};
+            } catch (error) {
+              console.error('Error fetching crop info:', error);
+            }
+          }
+
+          // Générer des données simulées pour la santé, l'humidité, etc.
+          const health = Math.floor(Math.random() * 30) + 70; // 70-100%
+          const moisture = Math.floor(Math.random() * 50) + 30; // 30-80%
+          const status = health >= 90 ? 'Excellent' : health >= 80 ? 'Healthy' : 'Needs Attention';
+          const trend = health >= 85 ? 'up' : 'down';
+
+          return {
+            id: field.id,
+            name: field.name,
+            crop: cropInfo.name || 'Unknown Crop',
+            area: `${field.area || 0} ha`,
+            health: health,
+            moisture: moisture,
+            status: status,
+            lastUpdate: '2h ago', // Simulé
+            image: getFieldImage(field.crop_type_id),
+            trend: trend,
+            lat: field.lat,
+            lon: field.lon,
+            country: field.country,
+            city: field.city,
+            crop_type_id: field.crop_type_id
+          };
+        })
+      );
+
+      setFields(enhancedFields);
+    } catch (error) {
+      console.error('Error loading fields:', error);
+      setError('Failed to load fields');
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
+
+  const loadCropTypes = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/crops');
+      setCropTypes(response.data);
+    } catch (error) {
+      console.error('Error loading crop types:', error);
+    }
+  };
+
+  const getFieldImage = (cropTypeId) => {
+    const images = {
+      1: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400&h=300&fit=crop', // Corn
+      2: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop', // Wheat
+      3: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&h=300&fit=crop', // Soybean
+      4: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop', // Rice
+    };
+    return images[cropTypeId] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop';
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -75,35 +122,47 @@ const MyFields = () => {
     return matchesSearch && matchesCrop;
   });
 
-  const cropTypes = ['all', ...new Set(fields.map(f => f.crop))];
+  const availableCropTypes = ['all', ...new Set(fields.map(f => f.crop))];
+
+  const handleFieldClick = (fieldId) => {
+    navigate(`/field?id=${fieldId}`);
+  };
+
+  const handleDeleteField = async (fieldId, fieldName) => {
+    if (window.confirm(`Are you sure you want to delete "${fieldName}"?`)) {
+      try {
+        await axios.delete(`http://localhost:5000/fields/${fieldId}`);
+        // Recharger la liste des champs
+        await loadFields();
+        alert('Field deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting field:', error);
+        alert('Failed to delete field!');
+      }
+    }
+  };
+
+  const totalArea = fields.reduce((sum, field) => sum + (parseFloat(field.area) || 0), 0);
+  const avgHealth = fields.length > 0 ? Math.round(fields.reduce((sum, field) => sum + field.health, 0) / fields.length) : 0;
+  const alertCount = fields.filter(field => field.health < 80).length;
+
+  if (isLoading) {
+    return (
+      <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} flex items-center justify-center`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
+          <p className={`mt-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Loading fields...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}>
-      {/* Header */}
-      <header className={`sticky top-0 z-50 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <button 
-              onClick={() => window.history.back()}
-              className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors`}
-            >
-              <ArrowLeft className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-gray-800'}`} />
-            </button>
-            <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              My Fields
-            </h1>
-            <button 
-              onClick={() => navigate('/create')}
-              className="p-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-            >
-              <Plus className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 space-y-6">
         
         {/* Stats Summary */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -113,15 +172,19 @@ const MyFields = () => {
           </div>
           <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Total Area</p>
-            <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>230 ha</p>
+            <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{totalArea} ha</p>
           </div>
           <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Avg Health</p>
-            <p className={`text-2xl font-bold text-green-500`}>85%</p>
+            <p className={`text-2xl font-bold ${avgHealth >= 80 ? 'text-green-500' : 'text-amber-500'}`}>
+              {avgHealth}%
+            </p>
           </div>
           <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Alerts</p>
-            <p className={`text-2xl font-bold text-amber-500`}>3</p>
+            <p className={`text-2xl font-bold ${alertCount > 0 ? 'text-amber-500' : 'text-green-500'}`}>
+              {alertCount}
+            </p>
           </div>
         </div>
 
@@ -152,7 +215,7 @@ const MyFields = () => {
                   : 'bg-white border-gray-300 text-gray-900'
               } focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none`}
             >
-              {cropTypes.map(crop => (
+              {availableCropTypes.map(crop => (
                 <option key={crop} value={crop}>
                   {crop === 'all' ? 'All Crops' : crop}
                 </option>
@@ -176,13 +239,19 @@ const MyFields = () => {
           </div>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className={`p-4 rounded-lg ${darkMode ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'} border`}>
+            <p className={`text-sm ${darkMode ? 'text-red-300' : 'text-red-800'}`}>{error}</p>
+          </div>
+        )}
+
         {/* Fields Grid/List */}
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredFields.map((field) => (
               <div
                 key={field.id}
-                onClick={() => alert(`View ${field.name} details`)}
                 className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl overflow-hidden shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-200'} hover:shadow-md transition-all cursor-pointer group`}
               >
                 <div className="relative h-48 overflow-hidden">
@@ -202,6 +271,7 @@ const MyFields = () => {
                     <div className="flex items-center gap-2 text-white/80 text-sm">
                       <MapPin className="w-4 h-4" />
                       <span>{field.area}</span>
+                      {field.city && <span>• {field.city}</span>}
                     </div>
                   </div>
                 </div>
@@ -243,7 +313,28 @@ const MyFields = () => {
                     <span className="font-semibold text-blue-500">{field.moisture}%</span>
                   </div>
 
-                  <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'} text-center pt-2 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleFieldClick(field.id);
+                      }}
+                      className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      View Details
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteField(field.id, field.name);
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+
+                  <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'} text-center`}>
                     Updated {field.lastUpdate}
                   </div>
                 </div>
@@ -255,8 +346,7 @@ const MyFields = () => {
             {filteredFields.map((field) => (
               <div
                 key={field.id}
-                onClick={() => alert(`View ${field.name} details`)}
-                className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-200'} hover:shadow-md transition-all cursor-pointer`}
+                className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-4 shadow-sm border ${darkMode ? 'border-gray-700' : 'border-gray-200'} hover:shadow-md transition-all`}
               >
                 <div className="flex items-center gap-4">
                   <img
@@ -272,7 +362,7 @@ const MyFields = () => {
                           {field.name}
                         </h3>
                         <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {field.crop} • {field.area}
+                          {field.crop} • {field.area} {field.city && `• ${field.city}`}
                         </p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(field.status)}`}>
@@ -280,7 +370,7 @@ const MyFields = () => {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="grid grid-cols-4 gap-4 text-sm">
                       <div>
                         <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Health</p>
                         <p className={`font-semibold ${field.health >= 80 ? 'text-green-500' : 'text-amber-500'}`}>
@@ -292,10 +382,24 @@ const MyFields = () => {
                         <p className="font-semibold text-blue-500">{field.moisture}%</p>
                       </div>
                       <div>
-                        <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Updated</p>
+                        <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Location</p>
                         <p className={`font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                          {field.lastUpdate}
+                          {field.city || 'Unknown'}
                         </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleFieldClick(field.id)}
+                          className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-1 px-2 rounded text-xs font-medium transition-colors"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleDeleteField(field.id, field.name)}
+                          className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-xs font-medium transition-colors"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -305,20 +409,42 @@ const MyFields = () => {
           </div>
         )}
 
-        {filteredFields.length === 0 && (
+        {filteredFields.length === 0 && !isLoading && (
           <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-12 text-center border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <Sprout className={`w-16 h-16 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`} />
             <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
               No fields found
             </h3>
-            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-              Try adjusting your search or filters
+            <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
+              {fields.length === 0 ? 'You haven\'t created any fields yet.' : 'Try adjusting your search or filters'}
             </p>
+            {fields.length === 0 && (
+              <button
+                onClick={() => navigate('/create')}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+              >
+                Create Your First Field
+              </button>
+            )}
           </div>
         )}
       </main>
+
+      <ChatSupport />
     </div>
   );
 };
 
-export default MyFields;
+// Composant wrapper pour gérer l'état darkMode
+const MyFieldsWithDarkMode = () => {
+  const [darkMode, setDarkMode] = useState(false);
+
+  return (
+    <MyFields 
+      darkMode={darkMode} 
+      setDarkMode={setDarkMode} 
+    />
+  );
+};
+
+export default MyFieldsWithDarkMode;

@@ -55,11 +55,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             >
               Notifications
             </button>
-            <button 
-              className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}
-            >
-              Aides
-            </button>
+            
             <button 
               onClick={() => navigate('/settings')} 
               className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}
@@ -150,12 +146,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
               >
                 Notifications
               </button>
-              <button 
-                onClick={() => setMobileMenuOpen(false)}
-                className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} transition-colors`}
-              >
-                Aides
-              </button>
+              
               <button 
                 onClick={() => {
                   navigate('/settings');

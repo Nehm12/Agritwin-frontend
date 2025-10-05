@@ -16,33 +16,124 @@ import FarmSimulation from './pages/simul';
 import AlertsNotifications from './pages/notifation';
 import FieldComparison from './pages/comparaison';
 import FieldDetail from './pages/details';
-
+import ProtectedRoute from './pages/ProtectedRoute';
 import Footer from './components/Footer';
-
 
 function App() {
   return (
     <Router>
-      
       <Routes>
+        {/* Routes publiques */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Home />} />
-        <Route path="/sim" element={<FarmSimulation />} />
-        <Route path="/create" element={<FieldCreation />} />
-        <Route path="/notification" element={<AlertsNotifications />}/>
-        <Route path="/field" element={<FieldDetail />} />
-        <Route path="/My_fields" element={<MyFields />} />
-        <Route path="/Reports" element={<ReportsAnalytics />} />
-        <Route path="/map" element={<MapView />} />
-        <Route path="/field-comparison" element={<FieldComparison />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/create-field" element={<CreateField />} />
-        <Route path="/simulation_set" element={<Simulation />} />
-        <Route path="/simulation" element={<SimulationSet />} />
-        <Route path="/settings" element={<Settings />} />
+        
+        {/* Routes protégées */}
+        <Route 
+          path="/sim" 
+          element={
+            <ProtectedRoute>
+              <FarmSimulation />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/create" 
+          element={
+            <ProtectedRoute>
+              <FieldCreation />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/notification" 
+          element={
+            <ProtectedRoute>
+              <AlertsNotifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/field" 
+          element={
+            <ProtectedRoute>
+              <FieldDetail />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/My_fields" 
+          element={
+            <ProtectedRoute>
+              <MyFields />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/Reports" 
+          element={
+            <ProtectedRoute>
+              <ReportsAnalytics />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/map" 
+          element={
+            <ProtectedRoute>
+              <MapView />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/field-comparison" 
+          element={
+            <ProtectedRoute>
+              <FieldComparison />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/create-field" 
+          element={
+            <ProtectedRoute>
+              <CreateField />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/simulation_set" 
+          element={
+            <ProtectedRoute>
+              <Simulation />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/simulation" 
+          element={
+            <ProtectedRoute>
+              <SimulationSet />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/settings" 
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
-      
     </Router>
   );
 }

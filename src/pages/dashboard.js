@@ -19,7 +19,7 @@ const Dashboard = () => {
     { icon: <MapPin className="w-6 h-6" />, label: 'My_Fields', color: 'emerald' },
     { icon: <TrendingUp className="w-6 h-6" />, label: 'simulation', color: 'blue' },
     { icon: <Bell className="w-6 h-6" />, label: 'notification', color: 'amber' },
-    { icon: <TrendingUp className="w-6 h-6" />, label: 'reports', color: 'purple' }
+    
   ];
 
   const alerts = [
@@ -98,10 +98,6 @@ const Dashboard = () => {
                 Notifications
               </button>
 
-              
-              <button className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Aides
-              </button>
               <button onClick={() => navigate('/settings')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
                 Paramètres
               </button>
@@ -149,9 +145,7 @@ const Dashboard = () => {
                 <button onClick={() => navigate('/notification')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Notifications
                 </button>
-                <button className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Aides
-                </button>
+                
                 <button onClick={() => navigate('/settings')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Paramètres
                 </button>

@@ -12,7 +12,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  /*const handleSubmit = async () => {
     setError('');
     if (!email || !password) {
       setError('Veuillez remplir tous les champs.');
@@ -47,7 +47,30 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };*/
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await axios.post('http://localhost:5000/users/login', {
+      phone: email,
+      password: password
+    });
+
+    if (response.data.user) {
+      // Sauvegarder les informations utilisateur
+      localStorage.setItem('userId', response.data.user.id);
+      localStorage.setItem('userData', JSON.stringify(response.data.user));
+      localStorage.setItem('isLoggedIn', 'true');
+      
+      // Rediriger vers le dashboard
+      navigate('/dashboard');
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('Login failed!');
+  }
+};
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-emerald-50 to-green-100'} transition-colors duration-300 flex items-center justify-center p-4`}>
