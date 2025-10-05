@@ -11,6 +11,8 @@ import ReportsAnalytics from './pages/reports';
 import MyFields from './pages/my_fields';
 import MapView from './pages/map';
 import FarmSimulation from './pages/simul';
+import Login from './pages/login';
+import Register from './pages/register';
 import AlertsNotifications from './pages/notifation';
 import FieldComparison from './pages/comparaison';
 import FieldDetail from './pages/details';
