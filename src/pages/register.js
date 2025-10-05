@@ -155,7 +155,7 @@ const Register = () => {
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+229 0190876543"
+                  placeholder="+1 234 567 890"
                   className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500 focus:border-emerald-500' 

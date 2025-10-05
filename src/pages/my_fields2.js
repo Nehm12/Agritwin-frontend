@@ -5,7 +5,7 @@ import ChatSupport from './chatbot';
 import Navbar from './nav';
 import axios from 'axios';
 
-const MyFields = ({ darkMode, setDarkMode }) => {
+const MyField2 = ({ darkMode, setDarkMode }) => {
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCrop, setFilterCrop] = useState('all');
@@ -35,16 +35,16 @@ const MyFields = ({ darkMode, setDarkMode }) => {
       const response = await axios.get(`http://localhost:5000/fields/`);
       
       // Filtrer uniquement les champs de l'utilisateur connecté
-      const userFields = response.data.filter(field => field.user_id === parseInt(userId));
+      /*const userFields = response.data.filter(field => field.user_id === parseInt(userId));*/
       
-      console.log('Fetched fields for user:', userFields);
+      console.log('Fetched fields for user:', response);
       
       // Charger les types de cultures
       const cropResponse = await axios.get(`http://localhost:5000/crops/get`);
       setCropTypes(cropResponse.data);
       
       // Transformer les données
-      const enhancedFields = userFields.map((field) => {
+      const enhancedFields = response.data.map((field) => {
         const cropInfo = cropResponse.data.find(crop => crop.id === field.crop_type_id) || {};
         const health = Math.floor(Math.random() * 30) + 70;
         const moisture = Math.floor(Math.random() * 50) + 30;
@@ -432,7 +432,7 @@ const MyFieldsWithDarkMode = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   return (
-    <MyFields 
+    <MyField2 
       darkMode={darkMode} 
       setDarkMode={setDarkMode} 
     />

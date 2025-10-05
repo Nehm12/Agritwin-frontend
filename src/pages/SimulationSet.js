@@ -34,7 +34,7 @@ const SimulationSetup = ({ onStartSimulation, darkMode, setDarkMode }) => {
 
   const loadCrops = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/crops');
+      const response = await axios.get('http://localhost:5000/crops/get');
       setCropTypes(response.data);
       console.log(response.data);
       console.log(cropTypes);
