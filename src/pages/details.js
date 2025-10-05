@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, MoreVertical, Calendar, Layers, Thermometer, Droplet, Wind, Sprout, TrendingUp, Activity, Beaker, Edit, Share2, Trash2 } from 'lucide-react';
-
+import ChatSupport from './chatbot';
 const FieldDetail = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState('NDVI');
@@ -279,6 +279,7 @@ const FieldDetail = () => {
           <span className="text-lg">Run Simulation</span>
         </button>
       </main>
+      <ChatSupport />
     </div>
   );
 };

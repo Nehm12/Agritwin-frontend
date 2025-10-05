@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Menu, Bell, Sprout, Droplet, Sun, TrendingUp, AlertTriangle, Bug, MapPin, X, Activity, Users, Shield, Zap, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import ChatSupport from './chatbot';
 const Dashboard = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -14,10 +16,10 @@ const Dashboard = () => {
   ];
 
   const quickActions = [
-    { icon: <MapPin className="w-6 h-6" />, label: 'My Fields', color: 'emerald' },
-    { icon: <TrendingUp className="w-6 h-6" />, label: 'Run Simulation', color: 'blue' },
-    { icon: <Bell className="w-6 h-6" />, label: 'Manage Alerts', color: 'amber' },
-    { icon: <TrendingUp className="w-6 h-6" />, label: 'Reports', color: 'purple' }
+    { icon: <MapPin className="w-6 h-6" />, label: 'My_Fields', color: 'emerald' },
+    { icon: <TrendingUp className="w-6 h-6" />, label: 'simulation', color: 'blue' },
+    { icon: <Bell className="w-6 h-6" />, label: 'notification', color: 'amber' },
+    
   ];
 
   const alerts = [
@@ -72,9 +74,9 @@ const Dashboard = () => {
                 <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-green-600 rounded-lg flex items-center justify-center">
                   <Sprout className="w-5 h-5 text-white" />
                 </div>
-                <span className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <Link to="/" className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   AgriTwin
-                </span>
+                </Link>
               </div>
             </div>
             
@@ -89,15 +91,13 @@ const Dashboard = () => {
               <button onClick={() => navigate('/map')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
                 Cartes
               </button>
-              <button onClick={() => navigate('/simulation_set')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
+              <button onClick={() => navigate('/simulation')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
                 Simulations
               </button>
               <button onClick={() => navigate('/notification')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
                 Notifications
               </button>
-              <button className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
-                Aides
-              </button>
+
               <button onClick={() => navigate('/settings')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'} font-medium transition-colors`}>
                 Paramètres
               </button>
@@ -110,10 +110,11 @@ const Dashboard = () => {
               >
                 {darkMode ? <Sun className="w-5 h-5 text-amber-400" /> : <Sun className="w-5 h-5 text-gray-600" />}
               </button>
-              <button className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors relative`}>
+              <button onClick={() => navigate('/notification')} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors relative`}>
                 <Bell className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
+              
 
               {/* Mobile Menu Button */}
               <button 
@@ -129,7 +130,7 @@ const Dashboard = () => {
           {mobileMenuOpen && (
             <div className={`md:hidden py-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <div className="flex flex-col gap-4">
-                <button className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
+                <button onClick={() => navigate('/dashboard')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Accueil
                 </button>
                 <button onClick={() => navigate('/create')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
@@ -138,15 +139,13 @@ const Dashboard = () => {
                 <button onClick={() => navigate('/map')}  className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Cartes
                 </button>
-                <button onClick={() => navigate('/simulation_set')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
+                <button onClick={() => navigate('/simulation')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Simulations
                 </button>
                 <button onClick={() => navigate('/notification')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Notifications
                 </button>
-                <button className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
-                  Aides
-                </button>
+                
                 <button onClick={() => navigate('/settings')} className={`text-left font-medium ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-emerald-600'}`}>
                   Paramètres
                 </button>
@@ -293,6 +292,8 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+      
+      <ChatSupport />
     </div>
   );
 };
