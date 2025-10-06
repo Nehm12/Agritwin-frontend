@@ -1,7 +1,7 @@
 # AgriTwin Frontend
 
 # Github Backend Link : https://github.com/Nehm12/AgriTwin-backend/ 
-# Frontend Deploiment link : https://agritwinf.vercel.app/
+# Acces Deploiment link OPEN : https://agritwinf.vercel.app/
 
 <div align="center">
 
