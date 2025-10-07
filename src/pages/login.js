@@ -10,6 +10,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const API_URL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
   /*const handleSubmit = async () => {
@@ -52,7 +53,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const response = await axios.post('http://localhost:5000/users/login', {
+    const response = await axios.post(`${API_URL}/users/login`, {
       phone: phone,
       password: password
     });

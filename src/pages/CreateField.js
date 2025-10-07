@@ -19,6 +19,7 @@ const FieldCreation = () => {
     irrigationType: '',
     fertilizationType: ''
   });
+  const API_URL = process.env.REACT_APP_API_URL;
   const [cropTypes, setCropTypes] = useState([]);
   
   useEffect(() => {
@@ -27,7 +28,7 @@ const FieldCreation = () => {
   
   const loadCrops = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/crops/get');
+      const response = await axios.get(`${API_URL}/crops/get`);
       setCropTypes(response.data);
     } catch (error) {
       console.error('Erreur:', error);
@@ -131,7 +132,7 @@ const FieldCreation = () => {
         return;
       }
 
-      const response = await axios.post("http://localhost:5000/fields/", {
+      const response = await axios.post(`${API_URL}/fields/`, {
         user_id: parseInt(userId),
         name: formData.fieldName,
         lat: parseFloat(formData.latitude),

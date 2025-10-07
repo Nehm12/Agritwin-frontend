@@ -21,6 +21,7 @@ const MapView = () => {
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [selectedField, setSelectedField] = useState(null);
   const [fields, setFields] = useState([]);
+  const API_URL = process.env.REACT_APP_API_URL;
   
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -59,7 +60,7 @@ const MapView = () => {
   const loadFields = async () => {
     try {
       // Remplacez par votre endpoint API
-      const response = await fetch('http://localhost:5000/fields');
+      const response = await fetch(`${API_URL}/fields`);
       const data = await response.json();
       
       // Transformer les données si nécessaire
@@ -312,7 +313,7 @@ const MapView = () => {
 
             <div className="flex gap-2">
               <button 
-                onClick={() => window.location.href = `/field/${selectedField.id}`}
+                onClick={() => window.location.href = `${API_URL}/field/${selectedField.id}`}
                 className="flex-1 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors"
               >
                 View Details

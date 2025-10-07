@@ -18,6 +18,7 @@ const Settings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [clientData, setClientData] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
   
   // Modals state
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
@@ -67,7 +68,7 @@ const Settings = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:5000/users/${userId}`);
+      const response = await axios.get(`${API_URL}/users/${userId}`);
       const userData = response.data;
       
       setClientData(userData);
@@ -151,7 +152,7 @@ const Settings = () => {
         language: appPreferences.language === 'French' ? 'fr' : 'en'
       };
 
-      await axios.put(`http://localhost:5000/users/${userId}`, updateData);
+      await axios.put(`${API_URL}/${userId}`, updateData);
       
       setShowEditProfileModal(false);
       await loadUserData(); // Recharger les données
@@ -188,7 +189,7 @@ const handleChangePassword = async (e) => {
 
     console.log("Envoi des données:", updateData);
     
-    await axios.put(`http://localhost:5000/users/${userId}/password`, updateData);
+    await axios.put(`${API_URL}/${userId}/password`, updateData);
     
     setShowChangePasswordModal(false);
     setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
@@ -210,7 +211,7 @@ const handleChangePassword = async (e) => {
       const userId = localStorage.getItem('userId');
       const languageCode = language === 'French' ? 'fr' : 'en';
       
-      await axios.put(`http://localhost:5000/users/${userId}`, {
+      await axios.put(`${API_URL}/users/${userId}`, {
         language: languageCode
       });
       

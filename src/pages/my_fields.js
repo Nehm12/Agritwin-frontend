@@ -14,6 +14,7 @@ const MyFields = ({ darkMode, setDarkMode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
   // Charger les champs et les types de culture au montage du composant
   useEffect(() => {
@@ -32,7 +33,7 @@ const MyFields = ({ darkMode, setDarkMode }) => {
       }
 
       // Récupérer TOUS les champs
-      const response = await axios.get(`http://localhost:5000/fields/`);
+      const response = await axios.get(`${API_URL}/fields/`);
       
       // Filtrer uniquement les champs de l'utilisateur connecté
       const userFields = response.data.filter(field => field.user_id === parseInt(userId));
@@ -40,7 +41,7 @@ const MyFields = ({ darkMode, setDarkMode }) => {
       console.log('Fetched fields for user:', userFields);
       
       // Charger les types de cultures
-      const cropResponse = await axios.get(`http://localhost:5000/crops/get`);
+      const cropResponse = await axios.get(`${API_URL}/crops/get`);
       setCropTypes(cropResponse.data);
       
       // Transformer les données
@@ -81,7 +82,7 @@ const MyFields = ({ darkMode, setDarkMode }) => {
 
   const loadCropTypes = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/crops');
+      const response = await axios.get(`${API_URL}/crops`);
       setCropTypes(response.data);
     } catch (error) {
       console.error('Error loading crop types:', error);
@@ -123,7 +124,7 @@ const MyFields = ({ darkMode, setDarkMode }) => {
   const handleDeleteField = async (fieldId, fieldName) => {
     if (window.confirm(`Are you sure you want to delete "${fieldName}"?`)) {
       try {
-        await axios.delete(`http://localhost:5000/fields/${fieldId}`);
+        await axios.delete(`${API_URL}/fields/${fieldId}`);
         // Recharger la liste des champs
         await loadFields();
         alert('Field deleted successfully!');

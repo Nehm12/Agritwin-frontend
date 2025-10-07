@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchFieldsData();
@@ -44,7 +45,7 @@ const Dashboard = () => {
       }
 
       // Récupérer les champs de l'utilisateur
-      const fieldsResponse = await axios.get(`http://localhost:5000/fields/user/${userId}`);
+      const fieldsResponse = await axios.get(`${API_URL}/fields/user/${userId}`);
       const fields = fieldsResponse.data;
       setFieldsData(fields);
 
@@ -70,7 +71,7 @@ const Dashboard = () => {
       setLoading(true);
       
       // Récupérer les prévisions complètes pour le champ sélectionné
-      const forecastResponse = await axios.get(`http://localhost:5000/forecast/${fieldId}`);
+      const forecastResponse = await axios.get(`${API_URL}/forecast/${fieldId}`);
       const forecast = forecastResponse.data;
       setForecastData(forecast);
 

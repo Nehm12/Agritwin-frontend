@@ -13,6 +13,7 @@ const SimulationSetup = ({ onStartSimulation, darkMode, setDarkMode }) => {
   const [fertilizationAmount, setFertilizationAmount] = useState(50);
   const [climateScenario, setClimateScenario] = useState('Normal');
   const [duration, setDuration] = useState(90);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const [fields, setFields] = useState([]);
   const [cropTypes, setCropTypes] = useState([]);
@@ -24,7 +25,7 @@ const SimulationSetup = ({ onStartSimulation, darkMode, setDarkMode }) => {
   
   const loadFields = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/fields');
+      const response = await axios.get(`${API_URL}/fields`);
       setFields(response.data);
       console.log(response.data);
     } catch (error) {
@@ -34,7 +35,7 @@ const SimulationSetup = ({ onStartSimulation, darkMode, setDarkMode }) => {
 
   const loadCrops = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/crops/get');
+      const response = await axios.get(`${API_URL}/crops/get`);
       setCropTypes(response.data);
       console.log(response.data);
       console.log(cropTypes);
