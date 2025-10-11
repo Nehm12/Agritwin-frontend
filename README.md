@@ -1,256 +1,157 @@
-# AgriTwin Frontend
+# 🌾 AgriTwin – Digital Twin for Agriculture
 
-# Github Backend Link : https://github.com/Nehm12/AgriTwin-backend/ 
-# Acces Deploiment link OPEN : https://agritwin.vercel.app/
+> **Smart Digital Twin Platform for African Agriculture**  
+> Web Interface for AgriTwin — an intelligent decision-support tool for farmers, agronomists, and agricultural organizations.
 
 <div align="center">
-
-![AgriTwin Logo](https://via.placeholder.com/150x150/4CAF50/FFFFFF?text=AgriTwin)
-
-**Jumeau Numérique Intelligent pour l'Agriculture Africaine**
 
 [![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.18-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[Démo en ligne](#) · [Documentation](#) · [Signaler un bug](../../issues) · [Demander une fonctionnalité](../../issues)
+🔗 **Backend Repository:** [AgriTwin Backend](https://github.com/Nehm12/AgriTwin-backend)  
+🌐 **Deployed Frontend:** [https://agritwin.vercel.app](https://agritwin.vercel.app)
 
 </div>
 
 ---
 
-## À propos
+## 📘 Overview
 
-**AgriTwin Frontend** est l'interface utilisateur moderne de la plateforme AgriTwin, conçue pour transformer la gestion agricole en Afrique grâce à des jumeaux numériques intelligents. L'application permet aux agriculteurs, agronomes et organisations de :
+**AgriTwin** is a comprehensive digital twin platform combining satellite data, weather forecasts, and agronomic intelligence to optimize crop yields and reduce agricultural risks. This repository contains the frontend application built with React and TypeScript.
 
-- Visualiser leurs exploitations agricoles en temps réel via des cartes interactives
-- Analyser les données satellites (NDVI, humidité, climat) avec des graphiques intuitifs
-- Simuler différents scénarios agricoles (irrigation, fertilisation, impacts climatiques)
-- Accéder depuis n'importe quel appareil (desktop, tablette, mobile)
-- Naviguer dans plusieurs langues (FR, EN, adaptable)
+### Key Capabilities
 
----
-
-## Fonctionnalités principales
-
-### Cartographie Interactive
-- Visualisation géospatiale des parcelles agricoles avec Leaflet
-- Affichage temps réel des indices NDVI et santé des cultures
-- Marqueurs personnalisés et couches de données satellites
-- Support multi-parcelles avec clustering intelligent
-
-### Tableaux de Bord & Analytics
-- Graphiques dynamiques avec Chart.js et Recharts
-- Indicateurs clés de performance (KPIs) agricoles
-- Comparaisons temporelles et inter-parcelles
-- Exports de rapports PDF/Excel
-
-### Simulations "What If"
-- Scénarios d'irrigation optimisée
-- Calculs de fertilisation NPK personnalisés
-- Prévisions d'impact climatique (sécheresse, inondations)
-- Estimations de rendement en temps réel
-
-### Interface Moderne & Responsive
-- Design adaptatif mobile-first avec Tailwind CSS
-- Mode sombre/clair automatique
-- Animations fluides et micro-interactions
-- Accessibilité WCAG 2.1 AA
-
-### Internationalisation
-- Support multilingue avec i18next
-- Adaptation culturelle et formats locaux
-- Traductions dynamiques des contenus
+- 🌍 Real-time visualization of farm fields and satellite data (NDVI, rainfall, humidity)
+- 📊 Advanced data analytics dashboards and predictive forecasting
+- 🌱 Interactive agricultural simulations (irrigation, fertilization, yield estimation)
+- 🌐 Multi-language support and cross-device compatibility (desktop, tablet, mobile)
+- 📈 Smart decision-support tools for precision agriculture
 
 ---
 
-## Démarrage rapide
+## 🚀 Features
 
-### Prérequis
+### 🗺️ Interactive Mapping
+- Dynamic maps powered by **Leaflet** and **React-Leaflet**
+- Real-time NDVI, crop health, and environmental data overlays
+- Multi-field clustering and custom map layer management
+- Geospatial analysis and field boundary tracking
+
+### 📊 Analytics Dashboard
+- Real-time KPIs and historical trend analysis
+- Custom charts via **Chart.js** and **Recharts**
+- Export reports to **PDF** or **Excel**
+- Comparative analysis across multiple growing seasons
+
+### 🌾 Simulation Tools
+- Irrigation and fertilization scenario testing
+- Climate impact projections (drought, flood, heat stress)
+- Dynamic yield predictions based on environmental factors
+- Risk assessment and mitigation recommendations
+
+### 💡 Modern UI/UX
+- Fully responsive design with **Tailwind CSS**
+- Light/Dark theme support
+- Smooth micro-interactions and animations
+- WCAG 2.1 AA accessibility compliance
+
+### 🌐 Internationalization (i18n)
+- Dynamic language switching (English/French)
+- Configurable date, time, and number formats
+- Extensible translation architecture
+
+---
+
+## 🧰 Tech Stack
+
+| Layer | Technology | Version | Description |
+|-------|------------|---------|-------------|
+| **Frontend Framework** | React | 19.2.0 | Modern UI library with hooks |
+| **Language** | TypeScript | 4.9.5 | Static type checking |
+| **Styling** | Tailwind CSS | 3.4.18 | Utility-first CSS framework |
+| **Charts** | Chart.js / Recharts | 4.5.0 / 3.2.1 | Data visualization |
+| **Mapping** | Leaflet / React-Leaflet | 1.9.4 / 5.0.0 | Interactive maps |
+| **HTTP Client** | Axios | 1.12.2 | API communication |
+| **State Management** | React Context / Redux | - | Global state |
+| **Testing** | Jest / React Testing Library | 27.5.1 | Unit & integration tests |
+| **Icons** | Lucide React | 0.544.0 | Modern SVG icons |
+
+---
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
 
 ```bash
-Node.js >= 18.0.0
-npm >= 9.0.0  # ou yarn >= 1.22.0
+Node.js >= 18.x
+npm >= 9.x  # or yarn >= 1.22.x
 ```
 
-### Installation
+### 1. Clone the Repository
 
 ```bash
-# Cloner le repository
-git clone https://github.com/votre-org/agritwin-frontend.git
+git clone https://github.com/Nehm12/agritwin-frontend.git
 cd agritwin-frontend
+```
 
-# Installer les dépendances
+### 2. Install Dependencies
+
+```bash
 npm install
-
-# Configurer les variables d'environnement
-cp .env.example .env
-# Éditer .env avec vos clés API
-
-# Lancer le serveur de développement
-npm start
+# or
+yarn install
 ```
 
-L'application sera accessible sur **http://localhost:3000**
+### 3. Environment Configuration
 
-### Build de production
+Create a `.env` file at the root of your project:
 
-```bash
-npm run build
-# Les fichiers optimisés seront dans le dossier /build
-```
-
----
-
-## Technologies & Stack
-
-<table>
-  <tr>
-    <td align="center" width="96">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="48" height="48" alt="React" />
-      <br>React 19
-    </td>
-    <td align="center" width="96">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="48" height="48" alt="TypeScript" />
-      <br>TypeScript
-    </td>
-    <td align="center" width="96">
-      <img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" width="48" height="48" alt="Tailwind" />
-      <br>Tailwind CSS
-    </td>
-    <td align="center" width="96">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="48" height="48" alt="JavaScript" />
-      <br>JavaScript
-    </td>
-  </tr>
-</table>
-
-### Dépendances principales
-
-| Catégorie | Package | Version | Usage |
-|-----------|---------|---------|-------|
-| **Core** | React | 19.2.0 | Bibliothèque UI |
-| | React Router DOM | 7.9.3 | Routage SPA |
-| | TypeScript | 4.9.5 | Typage statique |
-| **UI/Styling** | Tailwind CSS | 3.4.18 | Framework CSS |
-| | Lucide React | 0.544.0 | Icônes SVG |
-| **Visualisation** | Chart.js | 4.5.0 | Graphiques |
-| | Recharts | 3.2.1 | Charts React |
-| | Three.js | 0.180.0 | Visualisations 3D |
-| **Cartes** | Leaflet | 1.9.4 | Cartographie |
-| | React-Leaflet | 5.0.0 | Intégration React |
-| **I18n** | i18next | 24.2.1 | Internationalisation |
-| | react-i18next | 15.2.3 | Bindings React |
-| **Utilitaires** | Axios | 1.12.2 | Requêtes HTTP |
-| | AJV | 6.12.6 | Validation JSON |
-| **Tests** | Jest | 27.5.1 | Framework de tests |
-| | Testing Library | 13.4.0 | Tests composants |
-
----
-
-## Structure du projet
-
-```
-agritwin-frontend/
-├── public/                     # Fichiers statiques publics
-│   ├── index.html             # Point d'entrée HTML
-│   ├── manifest.json          # PWA manifest
-│   └── assets/                # Images, icônes, fonts
-│
-├── src/                        # Code source principal
-│   ├── components/            # Composants React réutilisables
-│   │   ├── FieldMap.jsx       # Carte interactive champs
-│   │   ├── SimulationPanel.jsx # Interface simulations
-│   │   ├── Dashboard.jsx      # Tableau de bord analytics
-│   │   └── ...
-│   │
-│   ├── pages/                 # Pages/vues principales
-│   │   ├── Home.jsx           # Page d'accueil
-│   │   ├── Fields.jsx         # Gestion des champs
-│   │   ├── Simulations.jsx    # Interface simulations
-│   │   └── Analytics.jsx      # Analyses et rapports
-│   │
-│   ├── services/              # Services & API clients
-│   │   ├── api.js             # Configuration Axios
-│   │   ├── fieldsService.js   # API champs
-│   │   ├── satelliteService.js # API satellites
-│   │   └── weatherService.js  # API météo
-│   │
-│   ├── hooks/                 # Custom React Hooks
-│   │   ├── useFields.js       # Hook gestion champs
-│   │   ├── useSimulations.js  # Hook simulations
-│   │   └── useWeather.js      # Hook données météo
-│   │
-│   ├── contexts/              # Context API
-│   │   ├── AuthContext.jsx    # Contexte authentification
-│   │   └── AppContext.jsx     # État global application
-│   │
-│   ├── utils/                 # Fonctions utilitaires
-│   │   ├── formatters.js      # Formatage données
-│   │   ├── validators.js      # Validations
-│   │   └── constants.js       # Constantes globales
-│   │
-│   ├── styles/                # Styles & CSS
-│   │   ├── tailwind.css       # Config Tailwind
-│   │   ├── globals.css        # Styles globaux
-│   │   └── components/        # Styles composants
-│   │
-│   ├── i18n/                  # Internationalisation
-│   │   ├── config.js          # Config i18next
-│   │   └── locales/
-│   │       ├── fr.json        # Traductions français
-│   │       └── en.json        # Traductions anglais
-│   │
-│   ├── __tests__/             # Tests unitaires
-│   │   ├── components/
-│   │   ├── services/
-│   │   └── utils/
-│   │
-│   ├── App.jsx                # Composant racine
-│   ├── index.jsx              # Point d'entrée React
-│   └── setupTests.js          # Configuration tests
-│
-├── .env.example               # Template variables env
-├── .gitignore                 # Fichiers ignorés Git
-├── package.json               # Dépendances npm
-├── tailwind.config.js         # Configuration Tailwind
-├── tsconfig.json              # Configuration TypeScript
-└── README.md                  # Ce fichier
-```
-
----
-
-## Configuration
-
-### Variables d'environnement
-
-Créez un fichier `.env` à la racine :
-
-```bash
-# API Backend
-REACT_APP_API_URL=http://localhost:5000
+```env
+# API Configuration
+REACT_APP_API_URL=https://agritwin-backend.onrender.com
 REACT_APP_API_TIMEOUT=10000
 
-# APIs externes
-REACT_APP_OPENWEATHER_API_KEY=votre_cle_openweathermap
-REACT_APP_SENTINEL_HUB_KEY=votre_cle_sentinel_hub
+# External API Keys
+REACT_APP_OPENWEATHER_API_KEY=your_openweather_api_key
+REACT_APP_SENTINEL_HUB_KEY=your_sentinel_hub_key
 
-# Configuration cartes
-REACT_APP_MAPBOX_TOKEN=votre_token_mapbox
+# Mapbox Configuration
+REACT_APP_MAPBOX_TOKEN=your_mapbox_token
 REACT_APP_DEFAULT_CENTER_LAT=6.3654
 REACT_APP_DEFAULT_CENTER_LNG=2.4183
 
-# Notifications
+# Application Settings
 REACT_APP_ENABLE_NOTIFICATIONS=true
-
-# Environnement
-REACT_APP_ENV=development
+REACT_APP_ENV=production
 ```
 
-### Configuration Tailwind CSS
+### 4. Start Development Server
 
-Le fichier `tailwind.config.js` inclut :
+```bash
+npm start
+# or
+yarn start
+```
+
+Your application will be available at `http://localhost:3000`
+
+### 5. Build for Production
+
+```bash
+npm run build
+# or
+yarn build
+```
+
+Production files will be generated in the `/build` directory.
+
+---
+
+## 🪄 Tailwind Configuration
+
+**tailwind.config.js**
 
 ```javascript
 module.exports = {
@@ -259,20 +160,25 @@ module.exports = {
     extend: {
       colors: {
         'agri-green': '#4CAF50',
-        'agri-brown': '#8D6E63',
         'agri-blue': '#2196F3',
+        'agri-brown': '#8D6E63',
+        'agri-yellow': '#FFC107',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
-      container: {
-        center: true,
-        padding: '1rem',
+      spacing: {
+        '128': '32rem',
+        '144': '36rem',
+      },
+      borderRadius: {
+        '4xl': '2rem',
       },
     },
   },
   plugins: [
     require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
     require('@tailwindcss/container-queries'),
   ],
 };
@@ -280,95 +186,131 @@ module.exports = {
 
 ---
 
-## Scripts disponibles
+## 📁 Project Structure
 
-| Commande | Description |
-|----------|-------------|
-| `npm start` | Démarre le serveur de développement sur http://localhost:3000 |
-| `npm run build` | Crée une build optimisée pour la production |
-| `npm test` | Lance les tests avec Jest en mode watch |
-| `npm run test:coverage` | Génère un rapport de couverture de code |
-| `npm run lint` | Vérifie la qualité du code avec ESLint |
-| `npm run format` | Formate le code avec Prettier |
-| `npm run eject` | Éjecte la configuration Create React App (irréversible) |
+```
+agritwin-frontend/
+├── public/
+│   ├── index.html              # HTML entry point
+│   ├── favicon.ico             # App icon
+│   └── assets/                 # Static assets
+│       ├── images/
+│       └── logos/
+│
+├── src/
+│   ├── components/             # Reusable UI components
+│   │   ├── common/            # Shared components (Button, Card, etc.)
+│   │   ├── dashboard/         # Dashboard-specific components
+│   │   ├── maps/              # Map-related components
+│   │   └── simulations/       # Simulation UI components
+│   │
+│   ├── pages/                 # Page-level components
+│   │   ├── Home.tsx
+│   │   ├── Dashboard.tsx
+│   │   ├── Simulations.tsx
+│   │   └── Analytics.tsx
+│   │
+│   ├── services/              # API integration layer
+│   │   ├── api.ts            # Axios configuration
+│   │   ├── weatherService.ts
+│   │   ├── satelliteService.ts
+│   │   └── simulationService.ts
+│   │
+│   ├── hooks/                 # Custom React hooks
+│   │   ├── useAuth.ts
+│   │   ├── useWeather.ts
+│   │   └── useSimulation.ts
+│   │
+│   ├── contexts/              # React Context providers
+│   │   ├── AuthContext.tsx
+│   │   ├── ThemeContext.tsx
+│   │   └── LanguageContext.tsx
+│   │
+│   ├── utils/                 # Utility functions
+│   │   ├── dateUtils.ts
+│   │   ├── mathUtils.ts
+│   │   └── validationUtils.ts
+│   │
+│   ├── i18n/                  # Internationalization
+│   │   ├── en.json
+│   │   ├── fr.json
+│   │   └── config.ts
+│   │
+│   ├── styles/                # Global styles
+│   │   ├── index.css
+│   │   └── tailwind.css
+│   │
+│   ├── types/                 # TypeScript type definitions
+│   │   ├── api.types.ts
+│   │   └── domain.types.ts
+│   │
+│   ├── App.tsx               # Main app component
+│   ├── index.tsx             # React entry point
+│   └── setupTests.ts         # Test configuration
+│
+├── .env.example              # Environment variables template
+├── .eslintrc.js             # ESLint configuration
+├── .prettierrc              # Prettier configuration
+├── package.json             # Dependencies & scripts
+├── tailwind.config.js       # Tailwind configuration
+├── tsconfig.json            # TypeScript configuration
+└── README.md                # This file
+```
 
 ---
 
-## Tests
+## 🧪 Available Scripts
 
-### Lancer les tests
-
-```bash
-# Mode watch (développement)
-npm test
-
-# Test unique
-npm test -- --watchAll=false
-
-# Avec couverture
-npm run test:coverage
-```
-
-### Structure des tests
-
-```javascript
-// Exemple: __tests__/components/FieldMap.test.jsx
-import { render, screen } from '@testing-library/react';
-import FieldMap from '../../components/FieldMap';
-
-describe('FieldMap Component', () => {
-  it('renders field marker correctly', () => {
-    const field = { 
-      name: 'Test Field', 
-      latitude: 6.3654, 
-      longitude: 2.4183 
-    };
-    
-    render(<FieldMap field={field} />);
-    expect(screen.getByText('Test Field')).toBeInTheDocument();
-  });
-});
-```
+| Command | Description |
+|---------|-------------|
+| `npm start` | Launch development server |
+| `npm run build` | Compile for production |
+| `npm test` | Run test suite |
+| `npm run test:coverage` | Generate coverage report |
+| `npm run lint` | Check code with ESLint |
+| `npm run lint:fix` | Auto-fix linting issues |
+| `npm run format` | Format code with Prettier |
+| `npm run type-check` | Run TypeScript type checking |
 
 ---
 
-## Déploiement
+## 🚢 Deployment
 
-### Déploiement sur Vercel (recommandé)
+### Deploy on Vercel (Recommended)
 
 ```bash
-# Installer Vercel CLI
 npm i -g vercel
-
-# Déployer
 vercel --prod
-
-# Configuration automatique détectée
 ```
 
-### Déploiement sur Netlify
+### Deploy on Netlify
 
 ```bash
-# Build
 npm run build
-
-# Déployer le dossier /build via Netlify CLI ou interface web
+netlify deploy --prod --dir=build
 ```
 
-### Déploiement Docker
+### Deploy with Docker
+
+**Dockerfile**
 
 ```dockerfile
-# Dockerfile
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 COPY . .
 RUN npm run build
+
+FROM node:18-alpine
+WORKDIR /app
 RUN npm install -g serve
+COPY --from=builder /app/build ./build
 EXPOSE 3000
 CMD ["serve", "-s", "build", "-l", "3000"]
 ```
+
+**Build and run:**
 
 ```bash
 docker build -t agritwin-frontend .
@@ -377,151 +319,249 @@ docker run -p 3000:3000 agritwin-frontend
 
 ---
 
-## Contribution
+## 📊 Methodologies & Algorithms
 
-Les contributions sont les bienvenues. Voici comment participer :
+### 1. Agricultural Yield Prediction Model
 
-1. **Forkez** le projet
-2. **Créez** votre branche feature
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. **Committez** vos changements
-   ```bash
-   git commit -m 'feat: Add amazing new feature'
-   ```
-4. **Pushez** vers la branche
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. **Ouvrez** une Pull Request
+**File:** `backend/routes/simulation.py → calculate_yield()`
 
-### Convention de commits
+**Type:** Parametric model based on FAO agronomic knowledge
 
-Nous suivons [Conventional Commits](https://www.conventionalcommits.org/) :
+**Input Variables:**
+- 🌡️ Temperature (°C)
+- 🌧️ Precipitation (mm)
+- 💧 Humidity (%)
+- 🌱 NDVI (Normalized Difference Vegetation Index)
+- 🌾 Crop type (15 parameterized types)
 
+**Formula:**
+
+```python
+# Temperature factor → Gaussian distribution
+temp_factor = exp(-((T - T_optimal)² / (2 * σ²)))
+
+# Precipitation factor → Sigmoid function
+prec_factor = 1 / (1 + exp(-0.01 * (P - P_optimal)))
+
+# NDVI factor → Normalization
+ndvi_factor = (NDVI - NDVI_min) / (0.9 - NDVI_min)
+
+# Humidity factor → Distance from optimal (70%)
+humidity_factor = 1 - abs(H - 70) / 70
+
+# Final weighted yield
+Yield = base_yield × (0.35×T_f + 0.30×P_f + 0.25×N_f + 0.10×H_f)
 ```
-feat: Nouvelle fonctionnalité
-fix: Correction de bug
-docs: Documentation
-style: Mise en forme code
-refactor: Refactoring
-test: Ajout de tests
-perf: Amélioration performance
-```
+
+**Weighting:**
+
+| Factor | Weight |
+|--------|--------|
+| Temperature | 35% |
+| Precipitation | 30% |
+| NDVI | 25% |
+| Humidity | 10% |
+
+**Advantages:**
+- ✅ Agronomically interpretable
+- ✅ Based on FAO standards
+- ✅ No need for massive datasets
+
+**Limitations:**
+- ⚠️ Fixed parameters
+- ⚠️ No machine learning adaptation
 
 ---
 
-## Performance & Optimisation
+### 2. Agricultural Risk Assessment
 
-- **Lazy Loading** : Chargement différé des composants avec `React.lazy()`
-- **Code Splitting** : Division automatique du bundle
-- **Images optimisées** : Formats WebP et compression
-- **Tree Shaking** : Élimination du code mort
-- **Service Worker** : Cache intelligent pour mode offline
+**File:** `backend/routes/simulation.py → calculate_risk_score()`
 
-### Web Vitals
+**Type:** Expert system based on rules
 
-```javascript
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+**Risk Scoring:**
 
-getCLS(console.log);  // Cumulative Layout Shift
-getFID(console.log);  // First Input Delay
-getLCP(console.log);  // Largest Contentful Paint
+| Condition | Score | Risk Type |
+|-----------|-------|-----------|
+| Precipitation < 50mm | +30 | High drought |
+| Precipitation < 100mm | +15 | Moderate drought |
+| Temperature > 35°C | +25 | Severe heat stress |
+| Temperature > 32°C | +10 | Moderate heat stress |
+| NDVI < 0.3 | +30 | Poor crop health |
+| NDVI < 0.5 | +15 | Vegetation stress |
+
+**Final Score:** `min(100, Σ scores)`
+
+**Risk Levels:**
+
+| Level | Score Range |
+|-------|-------------|
+| Low | < 25 |
+| Moderate | 25–50 |
+| High | > 50 |
+
+---
+
+### 3. Time-Series Weather Forecasting
+
+**File:** `backend/routes/forecast.py → simple_forecast()`
+
+**Algorithm:**
+
+```python
+# 1. Linear regression on last 30 days
+y = ax + b  # using np.polyfit
+
+# 2. Trend extrapolation
+forecast[i] = last_value + trend × i
+
+# 3. Stochastic noise
+noise = N(0, σ²)  # σ = 0.1 × std(historical_data)
 ```
 
+**Limitations:**
+- ⚠️ No seasonality detection
+- ⚠️ Linear assumption only
+- ⚠️ Artificial noise
+
 ---
 
-## Débogage
+### 4. Prophet (Facebook) — Available but Not Currently Used
 
-### Mode développement
+**File:** `backend/utils/forecast_utils.py`
 
-```bash
-# Activer les logs détaillés
-REACT_APP_DEBUG=true npm start
+**Usage Example:**
 
-# Désactiver le cache
-REACT_APP_NO_CACHE=true npm start
+```python
+from prophet import Prophet
+
+model = Prophet(daily_seasonality=True)
+model.fit(df)
+future = model.make_future_dataframe(periods=30)
+forecast = model.predict(future)
 ```
 
-### Outils recommandés
-
-- **React Developer Tools** (Extension Chrome/Firefox)
-- **Redux DevTools** (si utilisation Redux)
-- **Lighthouse** (audit performance)
-
----
-
-## Licence
-
-Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-```
-MIT License - Copyright (c) 2025 AgriTwin Team
-```
+**Advantages:**
+- ✅ Trend/seasonality decomposition
+- ✅ Confidence intervals
+- ✅ Handles missing values
 
 ---
 
-## Équipe & Support
+### 5. Geospatial Data Pipeline
 
-### Développeurs principaux
+**File:** `backend/utils/raster_utils.py`
 
-- **Chef de projet** : [Votre Nom](mailto:email@example.com)
-- **Lead Frontend** : [Nom développeur](mailto:email@example.com)
-- **UX/UI Designer** : [Nom designer](mailto:email@example.com)
+**Processing Steps:**
 
-### Support & Contact
+1. **Read GeoTIFF** (using `rasterio`)
+2. **Reproject to WGS84** (using `pyproj`)
+3. **Extract pixel values** by coordinates
+4. **Support EPSG:4326** standard
 
-- **Email** : support@agritwin.com
-- **Discord** : [Rejoindre la communauté](#)
-- **Twitter** : [@AgriTwinApp](#)
-- **Documentation** : [docs.agritwin.com](#)
-- **Bugs** : [GitHub Issues](../../issues)
-- **Suggestions** : [GitHub Discussions](../../discussions)
-
----
-
-## Remerciements
-
-Un grand merci à :
-
-- La communauté **React** pour l'écosystème incroyable
-- **Leaflet** pour la cartographie open-source
-- **Tailwind CSS** pour le framework CSS moderne
-- Tous les **contributeurs** qui font avancer ce projet
-- Les **agriculteurs africains** qui inspirent notre mission
+**Data Sources:**
+- Local `.tif` files
+- Organized folders by type:
+  - Temperature
+  - Precipitation
+  - Humidity
+  - NDVI (Sentinel-2)
 
 ---
 
-## Roadmap
+## 🧑‍💻 Team
 
-### Version 1.0 (MVP) - Complété
-- Interface de gestion des champs
-- Cartographie interactive
-- Simulations basiques
-- Dashboard analytics
+| Role | Member |
+|------|--------|
+| **Project Lead** | [Your Name] |
+| **Frontend Lead** | [Developer Name] |
+| **Backend Lead** | [Developer Name] |
+| **UI/UX Designer** | [Designer Name] |
+| **Data Scientist** | [Data Scientist Name] |
+| **Support** | support@agritwin.com |
 
-### Version 1.5 - En cours
-- Mode offline complet (PWA)
-- Notifications push web
-- Marketplace intégrée
-- Support multi-tenants
+---
 
-### Version 2.0 - Planifié
-- IA prédictive avancée
-- Vision par ordinateur (drone)
-- Blockchain pour traçabilité
-- Application mobile native
+## 🗺️ Roadmap
+
+### ✅ v1.0 (MVP) — Completed
+- Field management system
+- Interactive mapping
+- Basic simulation tools
+- Analytics dashboard
+
+### 🚧 v1.5 (In Progress)
+- Progressive Web App (PWA) with offline support
+- Web push notifications
+- Marketplace integration for seeds/fertilizers
+- Advanced risk assessment
+
+### 🔮 v2.0 (Planned)
+- AI-powered predictive analytics
+- Drone imagery integration
+- Blockchain-based traceability
+- Native mobile applications (iOS/Android)
+- IoT sensor integration
+- Real-time alerts and recommendations
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
+
+---
+
+## 🐛 Bug Reports & Feature Requests
+
+Use GitHub Issues to report bugs or request features:
+- [Report a Bug](https://github.com/Nehm12/agritwin-frontend/issues/new?template=bug_report.md)
+- [Request a Feature](https://github.com/Nehm12/agritwin-frontend/issues/new?template=feature_request.md)
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **FAO** for agricultural best practices and standards
+- **European Space Agency (ESA)** for Sentinel satellite data
+- **OpenWeather** for meteorological data
+- **Mapbox** for mapping infrastructure
+- **African Development Bank** for supporting agricultural innovation
+
+---
+
+## 📞 Contact & Support
+
+- **Website:** [https://agritwin.vercel.app](https://agritwin.vercel.app)
+- **Email:** contact@agritwin.com
+- **Support:** support@agritwin.com
+- **Twitter:** [@AgriTwinAfrica](https://twitter.com/AgriTwinAfrica)
+- **LinkedIn:** [AgriTwin](https://linkedin.com/company/agritwin)
 
 ---
 
 <div align="center">
 
-**Fait avec passion pour l'agriculture africaine**
+### 🌍 Made with ❤️ for Sustainable African Agriculture
 
-[![Star on GitHub](https://img.shields.io/github/stars/votre-org/agritwin-frontend?style=social)](https://github.com/votre-org/agritwin-frontend)
-[![Follow on Twitter](https://img.shields.io/twitter/follow/AgriTwinApp?style=social)](https://twitter.com/AgriTwinApp)
+**⭐ Star us on GitHub** | **🔗 Share this project** | **💚 Support sustainable farming**
 
-[Retour en haut](#agritwin-frontend)
+![Footer](https://via.placeholder.com/800x2/4CAF50/4CAF50)
+
+© 2025 AgriTwin – All Rights Reserved
 
 </div>
